@@ -6,6 +6,8 @@
 #include <stdlib.h>
 
 
+void menu(SDL_Window *fenetre,SDL_Renderer *renderer, SDL_Surface *image);
+
 
 int main(int argc, char *argv[]){
 
@@ -63,8 +65,8 @@ int main(int argc, char *argv[]){
     
     
 
-    image=SDL_LoadBMP("Maitre_Singe.bmp");
-        SDL_Surface *EcritureNouvellePartie=TTF_RenderText_Solid(TestNouvellePartie,"Appuie sur 1 pour jouez une partie!",rouge);
+    image=SDL_LoadBMP("img/Maitre_Singe.bmp");
+    SDL_Surface *EcritureNouvellePartie=TTF_RenderText_Solid(TestNouvellePartie,"Appuie sur 1 pour jouez une partie!",rouge);
 
     if(image==NULL){
         SDL_DestroyRenderer(renderer);
@@ -158,24 +160,25 @@ int main(int argc, char *argv[]){
     //}
     SDL_bool programmeEnCours=SDL_TRUE;
     Mix_PlayMusic(MusiqueEntree,-1);
-    while(programmeEnCours){
-        
-        
+    while(programmeEnCours){// boucle infinie pour le lancement de programme
+
         SDL_RenderPresent(renderer);
         SDL_Event evenement;
-        while(SDL_PollEvent(&evenement)){
-            switch(evenement.type){
+        while(SDL_PollEvent(&evenement)){//Jusqu'à ce qu'il se soit occupé de tous les évènements
+            switch(evenement.type){//les differentes actions possibles
                 case SDL_QUIT:
                     programmeEnCours=SDL_FALSE;
                     break;
-                case SDL_KEYDOWN:
+                case SDL_KEYDOWN://appuie sur une touche
                     switch(evenement.key.keysym.sym){
-                        case SDLK_SPACE:
+                        case SDLK_SPACE://espace on ferme la fenetre
                             programmeEnCours=SDL_FALSE;
                             Mix_CloseAudio();
                             break;
                         case SDLK_1:
                             printf("Appuie sur 1");
+
+                            menu(fenetre, renderer, image);
                             break;
                         default:
                             break;
@@ -196,4 +199,19 @@ int main(int argc, char *argv[]){
     TTF_Quit();
     SDL_Quit();
     return EXIT_SUCCESS;
+}
+
+
+void menu(SDL_Window *fenetre,SDL_Renderer *renderer, SDL_Surface *image){
+    
+    if (SDL_RenderClear(renderer)!=0){
+        printf("Problème clear windows");
+    }
+    //float fadeSpeed=0.7;
+
+    
+
+
+    //SDL_DestroyRenderer(renderer);
+    //SDL_DestroyWindow(fenetre);
 }
