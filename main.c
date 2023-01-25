@@ -207,7 +207,6 @@ void menu(SDL_Window *fenetre,SDL_Renderer *renderer, SDL_Surface *image){
     if (SDL_RenderClear(renderer)!=0){
         printf("Problème clear windows");
     }
-    //float fadeSpeed=0.7;
 
     
 
