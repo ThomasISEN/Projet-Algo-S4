@@ -5,7 +5,6 @@
 #include<stdio.h>
 #include <stdlib.h>
 
-
 void menu(SDL_Window *fenetre,SDL_Renderer *renderer, SDL_Surface *image);
 
 
