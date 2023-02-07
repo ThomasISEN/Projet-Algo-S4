@@ -3,8 +3,10 @@
 #include "../src/include/SDL2/SDL_ttf.h"
 #include "../src/include/SDL2/SDL_mixer.h"
 #include"affichage.h"
-#include<stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
+
 
 //--------------------------------------------------------------------------------------------------------------
 #define LARGEUR_TILE 50 // hauteur et largeur des tiles.
@@ -12,12 +14,23 @@
 #define MUR 1
 #define CHEMIN 0
 #define ROCHER 2
+#define BOMBE 3
 SDL_Rect VecteurPositionPersonnage;
 
+typedef struct BombeThread{
+    //SDL_Window *fenetre;
+    
+    int map[13][13];
+    int compteurBombe;
+    
+}BT;
+BT Liste_Args;
 
 //--------------------------------------------------------------------------------------------------------------
 int menu(){
+    
 
+    
     VecteurPositionPersonnage.y=50;
     VecteurPositionPersonnage.x=50;
     VecteurPositionPersonnage.w=LARGEUR_TILE;
@@ -25,6 +38,7 @@ int menu(){
     SDL_Window *fenetre=NULL;
     SDL_Renderer *renderer=NULL;
     int Carte[13][13];
+    int COMPTEUR_BOMBE=0;
     if(TTF_Init()!=0){
         SDL_Log("Erreur: Initialisation TTF_Init > %s\n ",TTF_GetError());
         return EXIT_FAILURE;
@@ -207,6 +221,19 @@ int menu(){
                            // printf("Appuie sur d");
                             DeplacementPersonnage(renderer,SDLK_d,Carte);
                             break;
+                        case SDLK_e:
+                            printf("Depot de bombe");
+                            
+                            creation_bombe(COMPTEUR_BOMBE,Carte);
+                            //printf("Valeur Liste %d \n",Liste_Args.map[0][0]);
+                            //printf("Valeur carte solo %d \n",Carte[0][0]);
+                            for(int i=0;i<13;i++){
+                                for(int j=0;j<13;j++){
+                                    Carte[i][j]=Liste_Args.map[i][j];
+                                }
+                            }
+                            RefreshEcran(Carte,renderer);
+                            break;
                         default:
                             break;
                         
@@ -229,6 +256,70 @@ int menu(){
 }
 
 //--------------------------------------------------------------------------------------------------------------
+void creation_bombe(int compB,int map[13][13]){
+     pthread_t AffichageBombe;
+     //Liste_Args.map=map;
+     Liste_Args.compteurBombe=2;
+     //Liste_Args.fenetre=ecran;
+     for(int i=0;i<13;i++){
+        for(int j=0;j<13;j++){
+            Liste_Args.map[i][j]=map[i][j];
+        }
+     }
+     pthread_create(&AffichageBombe,NULL,gestion_bombe,&Liste_Args);
+     pthread_join(AffichageBombe,NULL);
+     //pthread_exit(NULL);
+     //printf("Valeur apres creation_bombe %d \n",Liste_Args.compteurBombe);
+
+}
+
+void* gestion_bombe(void* arg){
+    BT* liste_args=arg;
+    liste_args->compteurBombe++;
+    
+   // int compteur_bombe=0;
+    printf("La bombe va explose");
+    
+  
+   
+    //printf("%d\n",liste_args->compteurBombe);
+
+    int COX_Perso=VecteurPositionPersonnage.x/50;
+    int COY_Perso=VecteurPositionPersonnage.y/50;
+    //printf("Coo au pif : %d \n",liste_args->map[0][0]);
+    //printf("Valeur CoX, CoY : %d %d ",COX_Perso,COY_Perso);
+    if(liste_args->map[COX_Perso][COY_Perso]==CHEMIN){
+        printf("Depot de bombe possible\n");
+        if(liste_args->map[COX_Perso-1][COY_Perso]==ROCHER){
+            liste_args->map[COX_Perso-1][COY_Perso]=CHEMIN;
+        }
+        if(liste_args->map[COX_Perso][COY_Perso-1]==ROCHER){
+            liste_args->map[COX_Perso][COY_Perso-1]=CHEMIN;
+        }
+        if(liste_args->map[COX_Perso][COY_Perso+1]==ROCHER){
+            liste_args->map[COX_Perso][COY_Perso+1]=CHEMIN;
+        }
+        if(liste_args->map[COX_Perso+1][COY_Perso]==ROCHER){
+            liste_args->map[COX_Perso+1][COY_Perso]=CHEMIN;
+        }
+
+    }
+    else{
+        printf("Impossible de pose la bombe \n");
+        return liste_args;
+    }
+     Sleep(2000);
+    return liste_args;
+}
+
+void *testPthread(void* StructureInfo){///////////////////////////////////////////////////////////////////////////////
+
+    
+    printf("C'est le pthread \n");
+    
+    
+}
+
 void CreationMap(SDL_Renderer* rendu, int map[13][13]){
     SDL_RenderClear(rendu);
     SDL_Rect VecteurPosition; //Vecteur qui me permet de parcourir toute la fenetre avec des dimensions CONNUES
@@ -435,6 +526,9 @@ void RefreshEcran(int map[13][13],SDL_Renderer* rendu ){
             else if(map[i][j]==ROCHER){
                 SDL_RenderCopy(rendu, texture2, NULL, &VecteurPosition);
             }
+            else if(map[i][j]==BOMBE){
+                SDL_RenderCopy(rendu,texture4,NULL,&VecteurPosition);
+            }
 
         }
     }
@@ -443,5 +537,29 @@ void RefreshEcran(int map[13][13],SDL_Renderer* rendu ){
 //--------------------------------------------------------------------------------------------------------------
 
 
-
-
+int ExplosionInGame(int map[13][13],SDL_Renderer* rendu,int compteur_bombe){
+    printf("La bombe va explose");
+    SDL_Surface* AffichageBomb=IMG_Load("img/bomb.png");
+    SDL_Texture* texture=NULL;
+    
+    if(compteur_bombe!=0){
+        printf("Bombe deja actif \n");
+    }
+    else{
+        texture=SDL_CreateTextureFromSurface(rendu,AffichageBomb);
+        SDL_RenderCopy(rendu, texture, NULL, &VecteurPositionPersonnage);
+        int i=VecteurPositionPersonnage.x/50;
+        int j=VecteurPositionPersonnage.y/50;
+        map[i][j]=BOMBE;
+        RefreshEcran(map,rendu);
+        SDL_RenderPresent(rendu);
+        compteur_bombe++;
+        
+    }
+    //Sleep(1000);
+    return compteur_bombe;
+   
+    
+    //SDL_Delay(1000);
+    //printf("Bombe Fini");
+}
