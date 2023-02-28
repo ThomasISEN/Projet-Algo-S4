@@ -57,6 +57,7 @@ SDL_Rect VecteurPosition; //Vecteur qui me permet de parcourir toute la fenetre 
     SDL_Surface* AffichageChemin;
     SDL_Surface* AffichageBomb;
      SDL_Surface* AffichageBombExplosion;
+     SDL_Surface* AffichagePowerUp;
 
  SDL_Texture* texture=NULL;
     SDL_Texture* texture2=NULL;
@@ -70,13 +71,14 @@ SDL_Rect VecteurPosition; //Vecteur qui me permet de parcourir toute la fenetre 
 
     SDL_Surface* AffichageLoose;
     SDL_Texture* Loose=NULL; 
+    SDL_Texture* PowerUp=NULL;
 //--------------------------------------------------------------------------------------------------------------
 int menu(){
     
-     choixX=rand()%12 +1;
-      choixY=rand()%12 +1;
+     choixX=rand()%11 +1;
+      choixY=rand()%11 +1;
     printf("Un PowerUp est apparu en [%d][%d] \n",choixX,choixY);
-   
+    Carte[choixX][choixY]=POW;
     
     
     int COMPTEUR_BOMBE=0;
@@ -233,6 +235,10 @@ int menu(){
     AffichageBombExplosion=IMG_Load("img/explosion_bombe.jpg");
     AffichageLoose=IMG_Load("img/gameover.jpg");
      AffichageWin=IMG_Load("img/youwin.png");
+     AffichagePowerUp=IMG_Load("img/pow.png");
+     if(AffichagePowerUp==NULL){
+        printf("Erruer Image PowerUp \n");
+     }
     printf("Loading Image \n");
 
 
@@ -245,7 +251,10 @@ int menu(){
     Win=SDL_CreateTextureFromSurface(renderer,AffichageWin);
     Loose=SDL_CreateTextureFromSurface(renderer,AffichageLoose);
     Personnage2=SDL_CreateTextureFromSurface(renderer,AffichagePersonnage2);
-
+    PowerUp=SDL_CreateTextureFromSurface(renderer,AffichagePowerUp);
+    if(PowerUp==NULL){
+        printf("Erreur Power up \n");
+    }
     
     Personnage1=SDL_CreateTextureFromSurface(renderer,AffichagePersonnage);
 
@@ -283,6 +292,7 @@ int menu(){
                             CreationMap(renderer,Carte);
                             InitialisationJoeur(renderer,Carte);
                             InitialisationJoeur2(renderer,Carte);
+                            Carte[choixX][choixY]=POW;
                             ETAT=1;
                            // Liste_Args.rendu=renderer;
                             //menu(fenetre, renderer, image);
@@ -537,7 +547,7 @@ void* gestion_bombe2(void* arg){
            // SDL_RenderPresent(Liste_Args.rendu);
             compteurBombe++;
             SDL_Delay(2000);
-            ExplosionInGame(i,j);
+            ExplosionInGame(i,j,2);
             if(Carte[COX_Perso-1][COY_Perso]==BOMBE_EXPLOSION){
                 //printf("Coo au pif Ancienne version: %d \n",liste_args->map[0][0]);
             
@@ -556,6 +566,20 @@ void* gestion_bombe2(void* arg){
             }
             if(Carte[COX_Perso+1][COY_Perso]==BOMBE_EXPLOSION){
                 Carte[COX_Perso+1][COY_Perso]=CHEMIN;
+            }
+            if(PowerUpP2POW==1){
+                if(Carte[COX_Perso+2][COY_Perso]==BOMBE_EXPLOSION){
+                Carte[COX_Perso+2][COY_Perso]=CHEMIN;
+            }
+            if(Carte[COX_Perso-2][COY_Perso]==BOMBE_EXPLOSION){
+                Carte[COX_Perso-2][COY_Perso]=CHEMIN;
+            }
+            if(Carte[COX_Perso][COY_Perso+2]==BOMBE_EXPLOSION){
+                Carte[COX_Perso][COY_Perso+2]=CHEMIN;
+            }
+            if(Carte[COX_Perso][COY_Perso-2]==BOMBE_EXPLOSION){
+                Carte[COX_Perso][COY_Perso-2]=CHEMIN;
+            }
             }
             compteurBombe--;
             Carte[i][j]=CHEMIN;
@@ -650,27 +674,41 @@ void* gestion_bombe(void* arg){
             //printf("entre dans refresh ecran \n");
     
             //printf("Rendu FINI!!!!!!!!!!!!!!!!!! \n");
-            ExplosionInGame(i,j); /* ICI ON DOIT RAFRAICHIR QUAND SA EXPLOSE*/
+            ExplosionInGame(i,j,1); /* ICI ON DOIT RAFRAICHIR QUAND SA EXPLOSE*/
             //RefreshEcran(Carte,Liste_Args.rendu);
             /* Modification de la carte après l'explosion */
-            if(Liste_Args.map[COX_Perso-1][COY_Perso]==ROCHER){
+            if(Carte[COX_Perso-1][COY_Perso]==BOMBE_EXPLOSION){
                 //printf("Coo au pif Ancienne version: %d \n",liste_args->map[0][0]);
             
                 
             
                 
-                Liste_Args.map[COX_Perso-1][COY_Perso]=CHEMIN;
+                Carte[COX_Perso-1][COY_Perso]=CHEMIN;
                 //printf("Coo au pif New version: %d \n",liste_args->map[COX_Perso-1][COY_Perso]);
             }
-            if(Liste_Args.map[COX_Perso][COY_Perso-1]==ROCHER){
+            if(Carte[COX_Perso][COY_Perso-1]==BOMBE_EXPLOSION){
                 
-                Liste_Args.map[COX_Perso][COY_Perso-1]=CHEMIN;
+                Carte[COX_Perso][COY_Perso-1]=CHEMIN;
             }
-            if(Liste_Args.map[COX_Perso][COY_Perso+1]==ROCHER){
-                Liste_Args.map[COX_Perso][COY_Perso+1]=CHEMIN;
+            if(Carte[COX_Perso][COY_Perso+1]==BOMBE_EXPLOSION){
+                Carte[COX_Perso][COY_Perso+1]=CHEMIN;
             }
-            if(Liste_Args.map[COX_Perso+1][COY_Perso]==ROCHER){
-                Liste_Args.map[COX_Perso+1][COY_Perso]=CHEMIN;
+            if(Carte[COX_Perso+1][COY_Perso]==BOMBE_EXPLOSION){
+                Carte[COX_Perso+1][COY_Perso]=CHEMIN;
+            }
+            if(PowerUpP1POW==1){
+                if(Carte[COX_Perso+2][COY_Perso]==BOMBE_EXPLOSION){
+                Carte[COX_Perso+2][COY_Perso]=CHEMIN;
+            }
+            if(Carte[COX_Perso-2][COY_Perso]==BOMBE_EXPLOSION){
+                Carte[COX_Perso-2][COY_Perso]=CHEMIN;
+            }
+            if(Carte[COX_Perso][COY_Perso+2]==BOMBE_EXPLOSION){
+                Carte[COX_Perso][COY_Perso+2]=CHEMIN;
+            }
+            if(Carte[COX_Perso][COY_Perso-2]==BOMBE_EXPLOSION){
+                Carte[COX_Perso][COY_Perso-2]=CHEMIN;
+            }
             }
             Liste_Args.compteurBombe--;
             Carte[i][j]=CHEMIN;
@@ -689,13 +727,13 @@ void* gestion_bombe(void* arg){
     
     printf("La bombe a explose \n");
     /* On remet les valeurs dans la carte principal (par soucis de syncro)*/
-    for(int i=0;i<13;i++){
-                                for(int j=0;j<13;j++){
-                                    //printf("Valeur Liste %d \n",Liste_Args.map[i][j]);
-                                    Carte[i][j]=Liste_Args.map[i][j];
-                                    //printf("Valeur carte %d \n",Carte[i][j]);
-                                }
-                            }
+    // for(int i=0;i<13;i++){
+    //                             for(int j=0;j<13;j++){
+    //                                 //printf("Valeur Liste %d \n",Liste_Args.map[i][j]);
+    //                                 Carte[i][j]=Liste_Args.map[i][j];
+    //                                 //printf("Valeur carte %d \n",Carte[i][j]);
+    //                             }
+    //                         }
     /* On test si qq à gagner*/
     ConditionVictoire(Carte,1,COX_Perso,COY_Perso);
     
@@ -859,6 +897,9 @@ void ChargementGame(int carte[13][13]){
 
 void CreationMap(SDL_Renderer* rendu, int map[13][13]){
     SDL_RenderClear(rendu);
+    PowerUpP1POW=0;
+    PowerUpP2POW=0;
+    
     VecteurPositionPersonnage.y=50;
     VecteurPositionPersonnage.x=50;
     VecteurPositionPersonnage.w=LARGEUR_TILE;
@@ -966,6 +1007,10 @@ void CreationMap(SDL_Renderer* rendu, int map[13][13]){
         }
        
     }
+    choixX=rand()%11 +1;
+      choixY=rand()%11 +1;
+    printf("Un PowerUp est apparu en [%d][%d] \n",choixX,choixY);
+    Carte[choixX][choixY]=POW;
    
     // Carte[1][2]=CHEMIN;
     // VecteurPosition.x=1*LARGEUR_TILE;
@@ -1127,6 +1172,7 @@ void DeplacementPersonnage(SDL_Renderer* rendu,int touche,int Carte[13][13]){
      if(test==choixX && test2==choixY){
         printf("augmentation de la taille de bombe \n");
         PowerUpP1POW=1;
+        Carte[choixX][choixY]=CHEMIN;
      }
      else{
         printf("Pas de PowerUp \n");
@@ -1209,6 +1255,19 @@ void DeplacementPersonnage2(SDL_Renderer* rendu,int touche,int Carte[13][13]){
             SDL_RenderPresent(rendu);
         }
     }
+    int test=0;
+     test=VecteurPositionPersonnage2.x/50;
+     int test2=0;
+     test2=VecteurPositionPersonnage2.y/50;
+     printf("Perso en [%d][%d] \n",test,test2);
+     if(test==choixX && test2==choixY){
+        printf("augmentation de la taille de bombe \n");
+        PowerUpP2POW=1;
+        Carte[choixX][choixY]=CHEMIN;
+     }
+     else{
+        printf("Pas de PowerUp \n");
+     }
      
 }
 
@@ -1295,7 +1354,7 @@ int blocage(int map[13][13],int touche){
     /* on test en fonction du déplacement, si la case est libre*/
     if(touche==122){
         V1=map[CoX][CoY-1];
-        if(V1==MUR /*|| V1==ROCHER*/){
+        if(V1==MUR /*|| V1==ROCHER */){
             printf("bloquer haut\n");
             return -1;
         }
@@ -1303,7 +1362,7 @@ int blocage(int map[13][13],int touche){
     }
     if(touche==115){
         V1=map[CoX][CoY+1];
-        if(V1==MUR /*|| V1==ROCHER*/){
+        if(V1==MUR /*|| V1==ROCHER */){
             printf("bloquer bas\n");
             return -1;
         }
@@ -1311,7 +1370,7 @@ int blocage(int map[13][13],int touche){
     }
     if(touche==113){
         V1=map[CoX-1][CoY];
-        if(V1==MUR /*|| V1==ROCHER*/){
+        if(V1==MUR /*|| V1==ROCHER */){
             printf("bloquer gauche\n");
             return -1;
         }
@@ -1319,7 +1378,7 @@ int blocage(int map[13][13],int touche){
     }
     if(touche==100){
         V1=map[CoX+1][CoY];
-        if(V1==MUR /*|| V1==ROCHER*/){
+        if(V1==MUR /*|| V1==ROCHER */){
             printf("bloquer droite\n");
             return -1;
         }
@@ -1388,6 +1447,10 @@ void RefreshEcran(int map[13][13],SDL_Renderer* rendu){
             if(map[i][j]==CHEMIN){
                  SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition); /* On charge la bonne texture en fonction du statut de la case de la matrice*/
             }
+            else if(map[i][j]==POW){
+               // printf("Init du powerUp \n");
+                SDL_RenderCopy(rendu, PowerUp, NULL, &VecteurPosition); 
+            }
             else if(map[i][j]==MUR){
                 SDL_RenderCopy(rendu, texture, NULL, &VecteurPosition); /* idem*/
             }
@@ -1415,6 +1478,7 @@ void RefreshEcran(int map[13][13],SDL_Renderer* rendu){
                 VecteurPosition.w=13*HAUTEUR_TILE;
                 SDL_RenderCopy(rendu, Loose, NULL, &VecteurPosition);
             }
+            
             // else if (map[i][j]==POW){
             //     SDL_RenderCopy(rendu, texture6, NULL, &VecteurPosition);
             // }
@@ -1485,7 +1549,7 @@ void AfficheEndGame(){
  
  */
 
-void ExplosionInGame(int CoX,int CoY){
+void ExplosionInGame(int CoX,int CoY,int appelPerso){
     //printf("La bombe va explose");
     // SDL_Surface* AffichageBomb=IMG_Load("img/Bamboo-Bloc.png");
     // SDL_Texture* texture=NULL;
@@ -1519,11 +1583,55 @@ void ExplosionInGame(int CoX,int CoY){
            Carte[CoX][CoY+1]=BOMBE_EXPLOSION;
             //return -1;
         }
+        if(PowerUpP1POW==1 && appelPerso==1){
+            V1=Carte[CoX][CoY+2];
+            if(V1==ROCHER || V1==CHEMIN){
+           Carte[CoX][CoY+2]=BOMBE_EXPLOSION;
+            //return -1;
+             }
+             V1=Carte[CoX][CoY-2];
+             if(V1==ROCHER || V1==CHEMIN){
+           Carte[CoX][CoY-2]=BOMBE_EXPLOSION;
+            //return -1;
+            }
+            V1=Carte[CoX+2][CoY];
+            if(V1==ROCHER || V1==CHEMIN){
+            Carte[CoX+2][CoY]=BOMBE_EXPLOSION;
+                //return -1;
+            }
+            V1=Carte[CoX-2][CoY];
+            if(V1==ROCHER || V1==CHEMIN){
+           Carte[CoX-2][CoY]=BOMBE_EXPLOSION;
+            //return -1;
+            }
+        }
+        if(PowerUpP2POW==1 && appelPerso==2){
+            V1=Carte[CoX][CoY+2];
+            if(V1==ROCHER || V1==CHEMIN){
+           Carte[CoX][CoY+2]=BOMBE_EXPLOSION;
+            //return -1;
+             }
+             V1=Carte[CoX][CoY-2];
+             if(V1==ROCHER || V1==CHEMIN){
+           Carte[CoX][CoY-2]=BOMBE_EXPLOSION;
+            //return -1;
+            }
+            V1=Carte[CoX+2][CoY];
+            if(V1==ROCHER || V1==CHEMIN){
+            Carte[CoX+2][CoY]=BOMBE_EXPLOSION;
+                //return -1;
+            }
+            V1=Carte[CoX-2][CoY];
+            if(V1==ROCHER || V1==CHEMIN){
+           Carte[CoX-2][CoY]=BOMBE_EXPLOSION;
+            //return -1;
+            }
+        }
         //RefreshEcran(Carte,renderer);Carte[11][10]
         printf("Dans l'explosion in game (rendu?) \n");
 
         /* Actualisation de l'affichage en fonction de la modification de la carte*/
-        SDL_Renderer* renderer2=NULL;
+       
         printf("Appel en cours de RefreshEcran avec le renderer2 \n");
        // RefreshEcran(Carte,renderer2);
        // SDL_RenderPresent(renderer);
@@ -1603,6 +1711,8 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
            // RefreshEcran(Carte,renderer);
            
         }
+   
+    
         else{
             printf("Le joueur 1 est mort par la bombe du joueur 2 \n");
             for(int i=0;i<13;i++){
@@ -1621,7 +1731,26 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
         }
         
     }
-
+    else if(PowerUpP1POW==1){
+        printf("Entre dans la condition \n");
+        printf("Coo du joueur 2 [%d][%d] \n",CoX_Perso2,CoX_Perso2);
+        printf("Cas 1 : [%d][%d] \n",coX-2,coY);
+        printf("Cas 2 : [%d][%d] \n",coX+2,coY);
+        printf("Cas 3 : [%d][%d] \n",coX,coY+2);
+        printf("Cas 4 : [%d][%d] \n",coX,coY-2);
+        if(( (CoX_Perso1==coX-2 && CoY_Perso1==coY) || (CoX_Perso1==coX+2 && CoY_Perso1==coY) || (CoX_Perso1==coX && CoY_Perso1==coY-2)
+    || (CoX_Perso1==coX && CoY_Perso1==coY+2))){
+        printf("Suicide avec l'augmentation \n'");
+         for(int i=0;i<13;i++){
+                                for(int j=0;j<13;j++){
+                                    //printf("Valeur Lecture map apres chargement %d \n",Carte[i][j]);
+                                    /* Modification de la carte pour actualiser l'affichage*/
+                                    Carte[i][j]=LOOSE;
+                                    //printf("Valeur carte %d \n",Carte[i][j]);
+                                }
+                            }
+    }
+    }
     if((CoX_Perso2==coX && CoY_Perso2==coY)|| (CoX_Perso2==coX-1 && CoY_Perso2==coY) || (CoX_Perso2==coX+1 && CoY_Perso2==coY) || (CoX_Perso2==coX && CoY_Perso2==coY-1)
     || (CoX_Perso2==coX && CoY_Perso2==coY+1)){
         if(appelPerso==2){
@@ -1651,6 +1780,26 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
            // SDL_RenderClear(renderer);
            // SDL_RenderClear(renderer);
         }
+        else if(PowerUpP2POW==1){
+        printf("Entre dans la condition \n");
+        printf("Coo du joueur 2 [%d][%d] \n",CoX_Perso2,CoX_Perso2);
+        printf("Cas 1 : [%d][%d] \n",coX-2,coY);
+        printf("Cas 2 : [%d][%d] \n",coX+2,coY);
+        printf("Cas 3 : [%d][%d] \n",coX,coY+2);
+        printf("Cas 4 : [%d][%d] \n",coX,coY-2);
+        if(( (CoX_Perso2==coX-2 && CoY_Perso2==coY) || (CoX_Perso2==coX+2 && CoY_Perso2==coY) || (CoX_Perso2==coX && CoY_Perso2==coY-2)
+    || (CoX_Perso2==coX && CoY_Perso2==coY+2))){
+        printf("Suicide avec l'augmentation \n'");
+         for(int i=0;i<13;i++){
+                                for(int j=0;j<13;j++){
+                                    //printf("Valeur Lecture map apres chargement %d \n",Carte[i][j]);
+                                    /* Modification de la carte pour actualiser l'affichage*/
+                                    Carte[i][j]=LOOSE;
+                                    //printf("Valeur carte %d \n",Carte[i][j]);
+                                }
+                            }
+    }
+    }
         else{
             printf("Le joueur 2 est mort par la bombe du joueur 1 \n");
            for(int i=0;i<13;i++){
@@ -1674,10 +1823,9 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
 }
 
 // Bug à regler:
-    //- Refresh Ecran après l'explosion de la bombe ne marche pas (crash après l'affichage) -> celui la j'ai pas compris , vraiment
+    
     //- Sauvegarde également la position des joueurs dans la sauvegarde pour ne pas avoir de posisiton aléatoires après le chargement (OUBLIE DE MA PART)
-    //- Si les joueurs utilisent leurs bombes en simultané alors 1 des 2 bombes ne disparait pas (Encore un prblm de syncro , c'est vraiment la galère
-    // avec les threads)
+    
 
    
 
@@ -1689,6 +1837,10 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
 
+
+    //- Si les joueurs utilisent leurs bombes en simultané alors 1 des 2 bombes ne disparait pas (Encore un prblm de syncro , c'est vraiment la galère
+    // avec les threads)
+    //- Refresh Ecran après l'explosion de la bombe ne marche pas (crash après l'affichage) -> celui la j'ai pas compris , vraiment
      //- 2 cases bizarres quand on win/loose (je pense que c'est un prblm de syncro avec la fin du threat , il faudrait jeter un oeil à la fin
     // des fonctions getions_bombe) (DONE)
 
