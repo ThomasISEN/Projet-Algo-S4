@@ -17,3 +17,5 @@ void creation_bombe2(int compB,int map[13][13],SDL_Renderer* rendu);
 void* gestion_bombe2(void* arg);
 void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY);
 void AfficheEndGame();
+Uint32 gestion_bombe_test();
+void frame_rate(int fps);
