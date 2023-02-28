@@ -19,6 +19,7 @@
 #define BOMBE_EXPLOSION 4
 #define WIN 5
 #define LOOSE 6
+#define POW 7
 SDL_Rect VecteurPositionPersonnage;
 SDL_Rect VecteurPositionPersonnage2;
 
@@ -38,11 +39,20 @@ SDL_Renderer *renderer=NULL;
 SDL_Window *fenetre=NULL;
 int compteurBombe=0;
 int JeuxFini=0;
+    int choixX=0;
+   
+    int choixY=0;
+int PowerUpP1POW=0;
+int PowerUpP2POW=0;
    
 
 //--------------------------------------------------------------------------------------------------------------
 int menu(){
     
+     choixX=rand()%12 +1;
+      choixY=rand()%12 +1;
+    printf("Un PowerUp est apparu en [%d][%d] \n",choixX,choixY);
+
     Liste_Args.rendu=SDL_CreateRenderer(fenetre,-1,SDL_RENDERER_SOFTWARE);
     Liste_Args.compteurBombe=0;
     VecteurPositionPersonnage.y=50;
@@ -324,9 +334,10 @@ int menu(){
                             else{
                                 printf("Impossible Bombe explosion \n");
                             }
+                            RefreshEcran(Carte,renderer);
                             break;
                         default:
-                            RefreshEcran(Carte,renderer);
+                            //RefreshEcran(Carte,renderer);
                             break;
                         
                     }
@@ -442,7 +453,7 @@ void* gestion_bombe2(void* arg){
             //RefreshEcran(Carte,renderer);
            // SDL_RenderPresent(Liste_Args.rendu);
             compteurBombe++;
-            Sleep(2000);
+            SDL_Delay(2000);
             ExplosionInGame(i,j);
             if(Carte[COX_Perso-1][COY_Perso]==BOMBE_EXPLOSION){
                 //printf("Coo au pif Ancienne version: %d \n",liste_args->map[0][0]);
@@ -488,6 +499,9 @@ void* gestion_bombe2(void* arg){
     //                             }
     //                         }
      ConditionVictoire(Carte,2,COX_Perso,COY_Perso);
+    //  Carte[11][10]=WIN;
+    //     Carte[10][11]=WIN;
+     //Sleep(1000);
     // printf("Valeur Liste chemin in function %d \n",Liste_Args.map[2][2]);
     // printf("Valeur Liste rocher in function %d \n",Liste_Args.map[2][1]);
     // //pthread_join(AffichageBombe,NULL);
@@ -508,6 +522,8 @@ void* gestion_bombe2(void* arg){
  
  */
 void* gestion_bombe(void* arg){
+    SDL_Renderer* renderer2=NULL;
+    renderer2=SDL_CreateRenderer(fenetre,-1,SDL_RENDERER_SOFTWARE);
     //SDL_Surface* AffichageBomb=IMG_Load("img/bomb.png");
    // SDL_Texture* texture=NULL;
    // BT* liste_args=arg;
@@ -544,15 +560,15 @@ void* gestion_bombe(void* arg){
             int i=VecteurPositionPersonnage.x/50;
             int j=VecteurPositionPersonnage.y/50;
             Carte[i][j]=BOMBE;
-            // RefreshEcran(Carte,Liste_Args.rendu);
+            RefreshEcran(Carte,renderer2);
            // SDL_RenderPresent(Liste_Args.rendu);
             Liste_Args.compteurBombe++;
-            Sleep(2000);
+            SDL_Delay(2000);
            // RefreshEcran(Carte,Liste_Args.rendu);
             //printf("entre dans refresh ecran \n");
     
             //printf("Rendu FINI!!!!!!!!!!!!!!!!!! \n");
-            ExplosionInGame(i,j);
+            ExplosionInGame(i,j); /* ICI ON DOIT RAFRAICHIR QUAND SA EXPLOSE*/
             //RefreshEcran(Carte,Liste_Args.rendu);
             /* Modification de la carte après l'explosion */
             if(Liste_Args.map[COX_Perso-1][COY_Perso]==ROCHER){
@@ -600,11 +616,15 @@ void* gestion_bombe(void* arg){
                             }
     /* On test si qq à gagner*/
     ConditionVictoire(Carte,1,COX_Perso,COY_Perso);
+    
+    //RefreshEcran(Carte,renderer2);
+    // Carte[11][10]=WIN;
+    // Carte[10][11]=WIN;
     // printf("Valeur Liste chemin in function %d \n",Liste_Args.map[2][2]);
     // printf("Valeur Liste rocher in function %d \n",Liste_Args.map[2][1]);
     // //pthread_join(AffichageBombe,NULL);
     //RefreshEcran(Carte,Liste_Args.rendu);
-    //RefreshEcran(Carte,renderer);
+    
     return 0;
 }
 
@@ -769,54 +789,92 @@ void CreationMap(SDL_Renderer* rendu, int map[13][13]){
     SDL_Surface* AffichageTiles=IMG_Load("img/Bamboo-Bloc.png");
     SDL_Surface* AffichageMurs=IMG_Load("img/Rock-Bloc.png");
     SDL_Surface* AffichageChemin=IMG_Load("img/Chemin.png");
+   // SDL_Surface* AfficheP1=IMG_Load("Img/pow.png");
     //SDL_Surface* AffichageBomb=IMG_Load("img/bomb.png");
     SDL_Texture* texture=NULL;
     SDL_Texture* texture2=NULL;
     SDL_Texture* texture3=NULL;
+   // SDL_Texture* texture4=NULL;
     //SDL_Texture* texture4=NULL;
     texture=SDL_CreateTextureFromSurface(rendu,AffichageTiles);
     texture2=SDL_CreateTextureFromSurface(rendu,AffichageMurs);
     texture3=SDL_CreateTextureFromSurface(rendu,AffichageChemin);
+   // texture4=SDL_CreateTextureFromSurface(rendu,AfficheP1);
     //texture4=SDL_CreateTextureFromSurface(rendu,AffichageBomb);
     //int map[13][13];
    
     VecteurPosition.w=LARGEUR_TILE;
     VecteurPosition.h=HAUTEUR_TILE;
     printf("Creation Map");
+
+
+       
+
+
     for(int i=0;i<13;i++){// J est un ligne, I est une colonne
         for(int j=0;j<13;j++){
             //printf("Case %d/%d \n",i,j);
            
             if(j%2!=0 && i%2==0 &&j>0 && i>0 &&j<12 && i<12){
                 //printf("Debug");
-                map[i][j]=ROCHER;
+                Carte[i][j]=ROCHER;
                 VecteurPosition.x=i*LARGEUR_TILE;
                 VecteurPosition.y=j*HAUTEUR_TILE;
                 SDL_RenderCopy(rendu, texture2, NULL, &VecteurPosition);
             }
+            // else if(i==choixX && j==choixY){
+            //     Carte[i][j]=POW;
+            //      VecteurPosition.x=i*LARGEUR_TILE;
+            //     VecteurPosition.y=j*HAUTEUR_TILE;
+            //     SDL_RenderCopy(rendu, texture4, NULL, &VecteurPosition);
+            // }
+            else if(i==11 && j==10){
+                Carte[i][j]=CHEMIN;
+                VecteurPosition.x=i*LARGEUR_TILE;
+                VecteurPosition.y=j*HAUTEUR_TILE;
+                SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
+            }
+            else if((i==10 && j==11)){
+                Carte[i][j]=CHEMIN;
+                VecteurPosition.x=i*LARGEUR_TILE;
+                VecteurPosition.y=j*HAUTEUR_TILE;
+                SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
+            }
+            else if((i==1 && j==2)){
+                Carte[i][j]=CHEMIN;
+                VecteurPosition.x=i*LARGEUR_TILE;
+                VecteurPosition.y=j*HAUTEUR_TILE;
+                SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
+            }
+            else if((i==2 && j==1)){
+                Carte[i][j]=CHEMIN;
+                VecteurPosition.x=i*LARGEUR_TILE;
+                VecteurPosition.y=j*HAUTEUR_TILE;
+                SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
+            }
             else if(j%2==0 && i%2!=0 &&j>0 && i>0 &&j<12 && i<12) {
                 //printf("Debug");
-                map[i][j]=ROCHER;
+                Carte[i][j]=ROCHER;
                 VecteurPosition.x=i*LARGEUR_TILE;
                 VecteurPosition.y=j*HAUTEUR_TILE;
                 SDL_RenderCopy(rendu, texture2, NULL, &VecteurPosition);
             }  
             else if(j%2==0 && i%2==0 &&j>0 && i>0 &&j<12 && i<12){
                  //printf("Debug");
-                 map[i][j]=CHEMIN;
+                 Carte[i][j]=CHEMIN;
                 VecteurPosition.x=i*LARGEUR_TILE;
                 VecteurPosition.y=j*HAUTEUR_TILE;
                 SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
             }  
             else if(j%2!=0 && i%2!=0 &&j>0 && i>0 &&j<12 && i<12){
                  //printf("Debug");
-                 map[i][j]=CHEMIN;
+                 Carte[i][j]=CHEMIN;
                 VecteurPosition.x=i*LARGEUR_TILE;
                 VecteurPosition.y=j*HAUTEUR_TILE;
                 SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
             }
             else{
-                map[i][j]=MUR;
+                Carte[i][j]=MUR;
                 VecteurPosition.x=i*LARGEUR_TILE;
                 VecteurPosition.y=j*HAUTEUR_TILE;
                 SDL_RenderCopy(rendu, texture, NULL, &VecteurPosition);
@@ -824,26 +882,31 @@ void CreationMap(SDL_Renderer* rendu, int map[13][13]){
             
             
         }
+       
     }
-    map[1][2]=CHEMIN;
-    VecteurPosition.x=1*LARGEUR_TILE;
-    VecteurPosition.y=2*HAUTEUR_TILE;
-    SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
-    map[2][1]=CHEMIN;
-     VecteurPosition.x=2*LARGEUR_TILE;
-    VecteurPosition.y=1*HAUTEUR_TILE;
-    SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
-    map[11][10]=CHEMIN;
-     VecteurPosition.x=11*LARGEUR_TILE;
-    VecteurPosition.y=10*HAUTEUR_TILE;
-    SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
-    map[10][11]=CHEMIN;
-     VecteurPosition.x=10*LARGEUR_TILE;
-    VecteurPosition.y=11*HAUTEUR_TILE;
-    SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
+   
+    // Carte[1][2]=CHEMIN;
+    // VecteurPosition.x=1*LARGEUR_TILE;
+    // VecteurPosition.y=2*HAUTEUR_TILE;
+    // SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
+    // Carte[2][1]=CHEMIN;
+    //  VecteurPosition.x=2*LARGEUR_TILE;
+    // VecteurPosition.y=1*HAUTEUR_TILE;
+    // SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
+    // Carte[11][10]=CHEMIN;
+    //  VecteurPosition.x=11*LARGEUR_TILE;
+    // VecteurPosition.y=10*HAUTEUR_TILE;
+    // SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
+    // Carte[10][11]=CHEMIN;
+    //  VecteurPosition.x=10*LARGEUR_TILE;
+    // VecteurPosition.y=11*HAUTEUR_TILE;
+    // SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
     SDL_RenderPresent(rendu);
+    //Carte[10][11]=LOOSE;
+    //RefreshEcran(Carte,rendu);
    
     //SDL_Delay(6000);
+    //return NULL;
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -974,7 +1037,19 @@ void DeplacementPersonnage(SDL_Renderer* rendu,int touche,int Carte[13][13]){
             SDL_RenderPresent(rendu);
         }
     }
-     
+     int test=0;
+     test=VecteurPositionPersonnage.x/50;
+     int test2=0;
+     test2=VecteurPositionPersonnage.y/50;
+     printf("Perso en [%d][%d] \n",test,test2);
+     if(test==choixX && test2==choixY){
+        printf("augmentation de la taille de bombe \n");
+        PowerUpP1POW=1;
+     }
+     else{
+        printf("Pas de PowerUp \n");
+     }
+
 }
 /* Fonction DéplacementPersonnage2
  
@@ -1191,7 +1266,9 @@ int blocage(int map[13][13],int touche){
 void RefreshEcran(int map[13][13],SDL_Renderer* rendu){
     printf("entre dans refresh ecran \n");
     /* On efface ce qui était présent dans le rendu (des résidus que l'on ne veut pas dans l'affichage)*/
-    SDL_RenderClear(rendu);
+   if(SDL_RenderClear(rendu)==0){
+    printf("Rendu ok \n");
+   };
 
     /* Chargement de toutes les textures/images dont on a besoin pour la carte de jeu*/
     SDL_Surface* AffichagePersonnage2=IMG_Load("img/Maitre_Singe.bmp");
@@ -1203,7 +1280,7 @@ void RefreshEcran(int map[13][13],SDL_Renderer* rendu){
     Personnage1=SDL_CreateTextureFromSurface(rendu,AffichagePersonnage);
 
 
-    printf("Rendu clear \n");
+    //printf("Rendu clear \n");
     SDL_Rect VecteurPosition; //Vecteur qui me permet de parcourir toute la fenetre avec des dimensions CONNUES
     SDL_Surface* AffichageTiles=IMG_Load("img/Bamboo-Bloc.png");
     if(AffichageTiles==NULL){
@@ -1213,12 +1290,14 @@ void RefreshEcran(int map[13][13],SDL_Renderer* rendu){
     SDL_Surface* AffichageChemin=IMG_Load("img/Chemin.png");
     SDL_Surface* AffichageBomb=IMG_Load("img/bomb.png");
      SDL_Surface* AffichageBombExplosion=IMG_Load("img/explosion_bombe.jpg");
-    printf("Chargement des surfaces finies \n");
+     //SDL_Surface* AffichageP1=IMG_Load("img/pow.png");
+    //printf("Chargement des surfaces finies \n");
     SDL_Texture* texture=NULL;
     SDL_Texture* texture2=NULL;
     SDL_Texture* texture3=NULL;
     SDL_Texture* texture4=NULL;
     SDL_Texture* texture5=NULL;
+    SDL_Texture* texture6=NULL;
 
     SDL_Surface* AffichageWin=IMG_Load("img/youwin.png");
     SDL_Texture* Win=NULL;
@@ -1227,7 +1306,7 @@ void RefreshEcran(int map[13][13],SDL_Renderer* rendu){
     SDL_Texture* Loose=NULL;
 
     /*Fin du chargement des textures*/
-    printf("Chargement des textures finies \n");
+   // printf("Chargement des textures finies \n");
     /* On définit un VecteurPosition, son but est de "parcourir" toute la fenetre de jeu pour placer au bonne endroit les textures chargées*/
     VecteurPosition.w=LARGEUR_TILE;
     VecteurPosition.h=HAUTEUR_TILE;
@@ -1238,6 +1317,7 @@ void RefreshEcran(int map[13][13],SDL_Renderer* rendu){
     texture3=SDL_CreateTextureFromSurface(rendu,AffichageChemin);
     texture4=SDL_CreateTextureFromSurface(rendu,AffichageBomb);
     texture5=SDL_CreateTextureFromSurface(rendu,AffichageBombExplosion);
+   // texture6=SDL_CreateTextureFromSurface(rendu,AffichageP1);
     Win=SDL_CreateTextureFromSurface(rendu,AffichageWin);
     Loose=SDL_CreateTextureFromSurface(rendu,AffichageLoose);
 
@@ -1265,32 +1345,36 @@ void RefreshEcran(int map[13][13],SDL_Renderer* rendu){
             else if(map[i][j]==BOMBE_EXPLOSION){
                 SDL_RenderCopy(rendu,texture5,NULL,&VecteurPosition);/* idem*/
             }
-            else if(map[i][j]==WIN){   /* Cas un peu spécial lorsqu'on perd/gagne */
+            else if(map[0][0]==WIN){   /* Cas un peu spécial lorsqu'on perd/gagne */
                 VecteurPosition.x=0; /* On modifie le Vecteur position pour qu'il se place à l'origine */
                 VecteurPosition.y=0;
                 VecteurPosition.h=13*HAUTEUR_TILE; /* On joue ensuite sur la hauteur et la largeur pour que l'image prennent toute la fenetre*/
                 VecteurPosition.w=13*HAUTEUR_TILE;
-                 SDL_RenderCopy(rendu, Win, NULL, &VecteurPosition);
+                SDL_RenderCopy(rendu, Win, NULL, &VecteurPosition);
             }
-            else if(map[i][j]==LOOSE){/* Cas un peu spécial lorsqu'on perd/gagne */
+            else if(map[0][0]==LOOSE){/* Cas un peu spécial lorsqu'on perd/gagne */
                 VecteurPosition.x=0;
                 VecteurPosition.y=0;
                 VecteurPosition.h=13*HAUTEUR_TILE;
                 VecteurPosition.w=13*HAUTEUR_TILE;
                 SDL_RenderCopy(rendu, Loose, NULL, &VecteurPosition);
             }
+            // else if (map[i][j]==POW){
+            //     SDL_RenderCopy(rendu, texture6, NULL, &VecteurPosition);
+            // }
 
         }
     }
     /* On oublie pas de placer également les personnages sur la carte en fonction de leurs propres vecteurPositions*/
     SDL_RenderCopy(rendu, Personnage2, NULL, &VecteurPositionPersonnage2);
     SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage);
-    printf("Rendu en cours \n");
+    //printf("Rendu en cours \n");
     /* On Affiche ensuite la modification*/
+    //printf("Valeur qui bug dans le refresh ecran quand la game se termine : %d \n",Carte[10][11]);
     SDL_RenderPresent(rendu);
     //Sleep(2000);
     //SDL_RenderClear(rendu);
-    printf("Rendu fini \n");
+    //printf("Rendu fini \n");
 }
 
 /* Fonction AfficheEndGame
@@ -1317,15 +1401,15 @@ void AfficheEndGame(){
     if(Carte[0][0]==WIN){
                 VecteurPosition.x=0;
                 VecteurPosition.y=0;
-                VecteurPosition.h=13*HAUTEUR_TILE;
-                VecteurPosition.w=13*HAUTEUR_TILE;
+                VecteurPosition.h=25*HAUTEUR_TILE;
+                VecteurPosition.w=25*HAUTEUR_TILE;
                  SDL_RenderCopy(renderer, Win, NULL, &VecteurPosition);
             }
             else if(Carte[0][0]==LOOSE){
                 VecteurPosition.x=0;
                 VecteurPosition.y=0;
-                VecteurPosition.h=13*HAUTEUR_TILE;
-                VecteurPosition.w=13*HAUTEUR_TILE;
+                VecteurPosition.h=100*HAUTEUR_TILE;
+                VecteurPosition.w=100*HAUTEUR_TILE;
                 SDL_RenderCopy(renderer, Loose, NULL, &VecteurPosition);
             }
         SDL_RenderPresent(renderer);
@@ -1383,10 +1467,11 @@ void ExplosionInGame(int CoX,int CoY){
         printf("Dans l'explosion in game (rendu?) \n");
 
         /* Actualisation de l'affichage en fonction de la modification de la carte*/
-
-        //RefreshEcran(Carte,renderer);
-        SDL_RenderPresent(renderer);
-        Sleep(500);
+        SDL_Renderer* renderer2=NULL;
+        printf("Appel en cours de RefreshEcran avec le renderer2 \n");
+        RefreshEcran(Carte,renderer2);
+       // SDL_RenderPresent(renderer);
+        SDL_Delay(500);
         
    
         //compteur_bombe++;
@@ -1418,14 +1503,14 @@ void ExplosionInGame(int CoX,int CoY){
 void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
     
     
-    printf("L'appel a ete fait aux coordonnes [%d][%d] \n",coX,coY);
+    //printf("L'appel a ete fait aux coordonnes [%d][%d] \n",coX,coY);
 
     /* Ici on va récuperer les coordonnées actualisées des 2 joueurs (car le déplacement est posssible pendant le sleep)*/
     int CoX_Perso1=VecteurPositionPersonnage.x/50;
     int CoY_Perso1=VecteurPositionPersonnage.y/50;
     int CoX_Perso2=VecteurPositionPersonnage2.x/50;
     int CoY_Perso2=VecteurPositionPersonnage2.y/50;
-    printf("Le joueur 1 est aux cordonnees [%d][%d] \n",CoX_Perso1,CoY_Perso1);
+    //printf("Le joueur 1 est aux cordonnees [%d][%d] \n",CoX_Perso1,CoY_Perso1);
 
     /* On test ensuite les 4 possibilités (la où la bombe explose )*/
     if((CoX_Perso1==coX && CoY_Perso1==coY)|| (CoX_Perso1==coX-1 && CoY_Perso1==coY) || (CoX_Perso1==coX+1 && CoY_Perso1==coY) || (CoX_Perso1==coX && CoY_Perso1==coY-1)
@@ -1443,12 +1528,24 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
                             Sleep(250);
                             // Carte[11][10]=LOOSE;
                             // Carte[10][11]=LOOSE;
-            AfficheEndGame();
-            RefreshEcran(Carte,renderer);
-            Sleep(100);
+            //AfficheEndGame();
+            // SDL_Surface* AffichageWin=IMG_Load("img/youwin.png");
+            //  SDL_Texture* Win=NULL;
+
+            // SDL_Surface* AffichageLoose=IMG_Load("img/gameover.jpg");
+            // SDL_Texture* Loose=NULL;
+            // Win=SDL_CreateTextureFromSurface(rendu,AffichageWin);
+            // Loose=SDL_CreateTextureFromSurface(rendu,AffichageLoose);
+           // RefreshEcran(Carte,renderer);
+           // Sleep(100);
             printf("valeur qui bug : %d",Carte[10][11]);
             /* Actualisation de l'affichage en fonction de la modification de la carte*/
+             //SDL_Delay(2000);
+            //SDL_RenderClear(renderer);
+            //renderer=NULL;
+            printf("Appel du refresh Ecran quand le perso1 se suicide \n");
             RefreshEcran(Carte,renderer);
+           
         }
         else{
             printf("Le joueur 1 est mort par la bombe du joueur 2 \n");
@@ -1473,7 +1570,8 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
     || (CoX_Perso2==coX && CoY_Perso2==coY+1)){
         if(appelPerso==2){
             printf("Le joueur 2 est mort par suicide \n");
-            SDL_RenderClear(renderer);
+            //SDL_RenderClear(renderer);
+            //Sleep(1000);
             // SDL_RenderCopy(renderer,Win,NULL,&VecteurPosition);
             //  SDL_RenderPresent(renderer);
             // SDL_RenderCopy(renderer,TexturePourEcriture,NULL,&PositionEcriture);
@@ -1489,10 +1587,10 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
                                     //printf("Valeur carte %d \n",Carte[i][j]);
                                 }
                             }
-                            Sleep(250);
-                            // Carte[11][10]=WIN;
-                            // Carte[10][11]=WIN;
+                           // Sleep(250);
+                            // 
             /* Actualisation de l'affichage en fonction de la modification de la carte*/
+            printf("Appel du refreshEcran quand le perso1 se suicide \n");
             RefreshEcran(Carte,renderer);
            // SDL_RenderClear(renderer);
            // SDL_RenderClear(renderer);
@@ -1511,6 +1609,7 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
                             // Carte[11][10]=WIN;
                             // Carte[10][11]=WIN;
             /* Actualisation de l'affichage en fonction de la modification de la carte*/
+            //renderer=NULL;
             RefreshEcran(Carte,renderer);
            // SDL_RenderClear(renderer);
         }
@@ -1521,21 +1620,27 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
 // Bug à regler:
     //- Refresh Ecran après l'explosion de la bombe ne marche pas (crash après l'affichage)b-> celui la j'ai pas compris , vraiment
     //- Sauvegarde également la position des joueurs dans la sauvegarde pour ne pas avoir de posisiton aléatoires après le chargement (OUBLIE DE MA PART)
-    //- 2 cases bizarres quand on win/loose (je pense que c'est un prblm de syncro avec la fin du threat , il faudrait jeter un oeil à la fin
-    // des fonctions getions_bombe)
-
-    //- Placement des persos quand on rejoue (DONE)
-
-    // - Perso 2 disparait si suicide (Je pense que c'est un oublie de ma part , soit je ne charge pas les textures soir prblm sur le VecteurPoisition)
 
 
-    //- Des fois sa crash quand la partie est fini (seulement si on fait nimp je crois ) [Sa peut également etre la double boucle ou je met
-    // toute la carte à WIN/LOOSE qui surcharge le thread et qui fait crash, on peut modifier seulement la première case et tester cela
-    // dans refreshEcran pour voir]
+   
+
+   
 
 
+   
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //- Si les joueurs utilisents leurs bombes en simultané alors 1 des 2 bombes ne disparait pas (Encore un prblm de syncro , c'est vraiment la galère
     // avec les threads)
+
+     //- 2 cases bizarres quand on win/loose (je pense que c'est un prblm de syncro avec la fin du threat , il faudrait jeter un oeil à la fin
+    // des fonctions getions_bombe) (DONE)
+
+     //- Placement des persos quand on rejoue (DONE)
+
+    // - Perso 2 disparait si suicide (Je pense que c'est un oublie de ma part , soit je ne charge pas les textures soir prblm sur le VecteurPoisition) (DONE)
+
+
 
 //Features:
     //-PowerUp pour pimenter la partie
