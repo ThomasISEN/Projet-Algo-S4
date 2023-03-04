@@ -10,7 +10,7 @@
 
 
 //--------------------------------------------------------------------------------------------------------------
-#define LARGEUR_TILE 50 // hauteur et largeur des tiles.
+#define LARGEUR_TILE 50 
 #define HAUTEUR_TILE 50
 #define MUR 1
 #define CHEMIN 0
@@ -24,7 +24,7 @@ SDL_Rect VecteurPositionPersonnage;
 SDL_Rect VecteurPositionPersonnage2;
 
 typedef struct BombeThread{
-    //SDL_Window *fenetre;
+  
     
     int map[13][13];
     int compteurBombe;
@@ -44,6 +44,8 @@ int JeuxFini=0;
     int choixY=0;
 int PowerUpP1POW=0;
 int PowerUpP2POW=0;
+int automatisation=0;
+ int COMPTEUR_BOMBE=0;
  SDL_TimerID timerID;
 
  //-----------------------------------------------------------------------------------
@@ -51,7 +53,7 @@ int PowerUpP2POW=0;
     SDL_Texture* Personnage2=NULL; 
     SDL_Surface* AffichagePersonnage;
     SDL_Texture* Personnage1=NULL;
-SDL_Rect VecteurPosition; //Vecteur qui me permet de parcourir toute la fenetre avec des dimensions CONNUES
+SDL_Rect VecteurPosition; 
     SDL_Surface* AffichageTiles;
       SDL_Surface* AffichageMurs;
     SDL_Surface* AffichageChemin;
@@ -64,7 +66,7 @@ SDL_Rect VecteurPosition; //Vecteur qui me permet de parcourir toute la fenetre 
     SDL_Texture* texture3=NULL;
     SDL_Texture* texture4=NULL;
     SDL_Texture* texture5=NULL;
-    //SDL_Texture* texture6=NULL;
+    
 
     SDL_Surface* AffichageWin;
     SDL_Texture* Win=NULL;
@@ -81,7 +83,7 @@ int menu(){
     Carte[choixX][choixY]=POW;
     
     
-    int COMPTEUR_BOMBE=0;
+   
     if(TTF_Init()!=0){
         SDL_Log("Erreur: Initialisation TTF_Init > %s\n ",TTF_GetError());
         return EXIT_FAILURE;
@@ -97,7 +99,7 @@ int menu(){
         SDL_Log("Erreur: Initialisation audio mix_init > %s\n ",Mix_GetError());
         return EXIT_FAILURE;
     }
-    //Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,MIX_DEFAULT_CHANNELS,1024);
+   
     Mix_Music *MusiqueEntree;
     MusiqueEntree=Mix_LoadMUS("musique/KungFuPanda1.mp3");
     
@@ -111,13 +113,13 @@ int menu(){
         return EXIT_FAILURE;
     };
     
-    //execution du programme
+
     fenetre=SDL_CreateWindow("Projet Bomberman",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,13*HAUTEUR_TILE,13*LARGEUR_TILE,0);
     if(fenetre==NULL){
         SDL_Log("Erreur: Création fenetre > %s\n ",SDL_GetError());
         return EXIT_FAILURE;
     }
-    /////////////////////////////////////
+  
     renderer=SDL_CreateRenderer(fenetre,-1,SDL_RENDERER_SOFTWARE);
     if(renderer==NULL){
         SDL_Log("Erreur: Création rendu > %s\n ",SDL_GetError());
@@ -126,12 +128,12 @@ int menu(){
     SDL_RenderPresent(renderer);
 
     SDL_Surface *image=NULL;
-   // SDL_Texture *texture=NULL;
+  
     SDL_Color rouge={255,0,0};
     
    
 
-    image=SDL_LoadBMP("img/Maitre_Singe.bmp");
+    image=IMG_Load("img/menu.png");
 
     SDL_Surface *EcritureNouvellePartie=TTF_RenderText_Solid(TestNouvellePartie,"Appuie sur 1 pour jouez une partie",rouge);
 
@@ -177,7 +179,7 @@ int menu(){
         return EXIT_FAILURE;
     }
     SDL_Rect rectangle;
-    SDL_Rect PositionEcriture; //Pour l'écriture
+    SDL_Rect PositionEcriture; 
 
     if(SDL_QueryTexture(texture,NULL,NULL,&rectangle.w,&rectangle.h)!=0){
         SDL_DestroyRenderer(renderer);
@@ -199,8 +201,10 @@ int menu(){
     }
 
 
-    rectangle.x=(800-rectangle.w)/2;
-    rectangle.y=(600-rectangle.w)/2;
+    rectangle.x=0;
+    rectangle.y=0;
+    rectangle.w=13*HAUTEUR_TILE;
+     rectangle.h=13*HAUTEUR_TILE;
     PositionEcriture.x=(800-PositionEcriture.w)/2;
     PositionEcriture.y=(1050-PositionEcriture.h)/2;
 
@@ -221,11 +225,7 @@ int menu(){
             SDL_Log("Erreur: RenderCopy2 > %s\n ",SDL_GetError());
         return EXIT_FAILURE;
     }
-    //if(SDL_RenderClear(renderer)!=0){
-        //SDL_Log("Erreur: Effacement rendu > %s\n ",SDL_GetError());
-        //return EXIT_FAILURE;
-    //}
-     /////////////////////////////////////////////////////////////////////////////////////////
+    
     AffichagePersonnage2=IMG_Load("img/Maitre_Singe.bmp");
     AffichagePersonnage=IMG_Load("img/Po-PD.png");
     AffichageTiles=IMG_Load("img/Bamboo-Bloc.png");
@@ -247,7 +247,7 @@ int menu(){
     texture3=SDL_CreateTextureFromSurface(renderer,AffichageChemin);
     texture4=SDL_CreateTextureFromSurface(renderer,AffichageBomb);
     texture5=SDL_CreateTextureFromSurface(renderer,AffichageBombExplosion);
-   // texture6=SDL_CreateTextureFromSurface(rendu,AffichageP1);
+  
     Win=SDL_CreateTextureFromSurface(renderer,AffichageWin);
     Loose=SDL_CreateTextureFromSurface(renderer,AffichageLoose);
     Personnage2=SDL_CreateTextureFromSurface(renderer,AffichagePersonnage2);
@@ -258,7 +258,7 @@ int menu(){
     
     Personnage1=SDL_CreateTextureFromSurface(renderer,AffichagePersonnage);
 
-    ////////////////////////////////////
+   
     Liste_Args.rendu=SDL_CreateRenderer(fenetre,-1,SDL_RENDERER_SOFTWARE);
     Liste_Args.compteurBombe=0;
     VecteurPositionPersonnage.y=50;
@@ -272,83 +272,77 @@ int menu(){
 
     SDL_bool programmeEnCours=SDL_TRUE;
     Mix_PlayMusic(MusiqueEntree,-1);
-    while(programmeEnCours){// boucle infinie pour le lancement de programme
+    while(programmeEnCours){
 
         SDL_RenderPresent(renderer);
         SDL_Event evenement;
-        while(SDL_PollEvent(&evenement)){//Jusqu'à ce qu'il se soit occupé de tous les évènements
-            switch(evenement.type){//les differentes actions possibles
+        while(SDL_PollEvent(&evenement)){
+            switch(evenement.type){
                 case SDL_QUIT:
                     programmeEnCours=SDL_FALSE;
                     break;
-                case SDL_KEYDOWN://appuie sur une touche
+                case SDL_KEYDOWN:
                     switch(evenement.key.keysym.sym){
-                        case SDLK_SPACE://espace on ferme la fenetre
+                        case SDLK_SPACE:
                             programmeEnCours=SDL_FALSE;
                             Mix_CloseAudio();
                             break;
+                        case SDLK_a:
+                            printf("Automatisation du 2eme perso \n");
+                            automatisation++;
+                            if(automatisation%2==0){
+                                pthread_t DeplacementAuto;
+                                pthread_create(&DeplacementAuto,NULL,Moove_Perso,NULL);
+                              
+                            }
+                            
+                            break;
                         case SDLK_1:
-                           // printf("Appuie sur 1");
+                           
                             CreationMap(renderer,Carte);
                             InitialisationJoeur(renderer,Carte);
                             InitialisationJoeur2(renderer,Carte);
                             Carte[choixX][choixY]=POW;
                             ETAT=1;
-                           // Liste_Args.rendu=renderer;
-                            //menu(fenetre, renderer, image);
+                           
+                            
                             break;
-                        case SDLK_z: //valeur 122
-                            //printf("Appuie sur z");
+                        case SDLK_z: 
+                            
                             printf("Valeur qui bug (Dans le deplacement avant le refresh) : %d \n",Carte[10][11]);
                             DeplacementPersonnage(renderer,122,Carte);
-                            //Liste_Args.rendu=renderer;
-                            //RefreshEcran(Carte,renderer);
-                           // SauvegardeGame(Carte);
+                            
                             break;
-                        case SDLK_q: //valeur 113
-                           // printf("Appuie sur q");
+                        case SDLK_q: 
+                           
                             DeplacementPersonnage(renderer,113,Carte);
-                            //Liste_Args.rendu=renderer;
-                           // RefreshEcran(Carte,renderer);
-                             //SauvegardeGame(Carte);
+                            
                             break;
-                        case SDLK_s: //valeur 115
-                           // printf("Appuie sur s");
+                        case SDLK_s: 
+                          
                             DeplacementPersonnage(renderer,115,Carte);
-                            //Liste_Args.rendu=renderer;
-                            //RefreshEcran(Carte,renderer);
-                            //SauvegardeGame(Carte);
+                            
                             break;
                         case SDLK_d:
-                           // printf("Appuie sur d");
+                           
                             DeplacementPersonnage(renderer,SDLK_d,Carte);
-                            //Liste_Args.rendu=renderer;
-                           // RefreshEcran(Carte,renderer);
-                           // SauvegardeGame(Carte);
+                            
                             break;
                         case SDLK_e:
                             printf("Depot de bombe");
-                            //Liste_Args.rendu=renderer;
+                            
                             if(Liste_Args.compteurBombe==0){
                                 creation_bombe(COMPTEUR_BOMBE,Carte,renderer);
-                                 //ConditionVictoire(Carte,1,VecteurPositionPersonnage.x,VecteurPositionPersonnage.y);
+                                 
                             }
                             else{
                                 printf("Impossible Bombe explosion \n");
                             }
                             
-                        //    // printf("Valeur Liste chemin %d \n",Liste_Args.map[2][2]);
-                        //     printf("Valeur Liste rocher %d \n",Liste_Args.map[2][1]);
-                        //     printf("Valeur carte chemin %d \n",Carte[2][2]);
-                        //     printf("Valeur carte rocher %d \n",Carte[2][1]);
-                            //printf("Valeur carte solo %d \n",Carte[0][0]);
-                            
-                            
-                            //RefreshEcran(Carte,renderer);
+                      
                             break;
                         case SDLK_t:
-                            // printf("Valeur Liste chemin %d \n",Liste_Args.map[2][2]);
-                            // printf("Valeur Liste rocher %d \n",Liste_Args.map[2][1]);
+                            
                             SauvegardeGame(Carte);
                             break;
                             
@@ -356,70 +350,61 @@ int menu(){
                             printf("Chargement en Cours \n");
                             
                             ChargementGame(Carte);
-                           // Sleep(1000);
-                            // for(int i=0;i<13;i++){
-                            //     for(int j=0;j<13;j++){
-                            //         printf("Valeur Lecture map apres chargement %d \n",Carte[i][j]);
-                            //         //Carte[i][j]=Liste_Args.map[i][j];
-                            //         //printf("Valeur carte %d \n",Carte[i][j]);
-                            //     }
-                            // }
-                            //RefreshEcran(Carte,renderer);
-                            //printf("Refresh ecran FINITO \n");
+                           
                             break;
-                        case SDLK_o: //111
+                        case SDLK_o:
                             printf("Deplacement perso 2 \n");
                             DeplacementPersonnage2(renderer,SDLK_o,Carte);
-                           // RefreshEcran(Carte,renderer);
+                           
                             break;
-                        case SDLK_m: //109
+                        case SDLK_m: 
                             printf("Deplacement perso 2 \n");
                             DeplacementPersonnage2(renderer,SDLK_m,Carte);
-                           // RefreshEcran(Carte,renderer);
+                          
                             break;
-                        case SDLK_l: //108
+                        case SDLK_l: 
                             printf("Deplacement perso 2 \n");
                             DeplacementPersonnage2(renderer,SDLK_l,Carte);
-                           // RefreshEcran(Carte,renderer);
+                           
                             break;
-                        case SDLK_k: //107
+                        case SDLK_k: 
                             printf("Deplacement perso 2 \n");
                             DeplacementPersonnage2(renderer,SDLK_k,Carte);
-                           // RefreshEcran(Carte,renderer);
+                          
                             break;
                         case SDLK_p:
                             printf("Depot de bombe");
                             Liste_Args.rendu=renderer;
                             if(compteurBombe==0){
                                 creation_bombe2(COMPTEUR_BOMBE,Carte,renderer);
-                                //ConditionVictoire(Carte,2,VecteurPositionPersonnage2.x,VecteurPositionPersonnage2.y);
+                                
                             }
                             else{
                                 printf("Impossible Bombe explosion \n");
                             }
-                           // RefreshEcran(Carte,renderer);
+                           
                             break;
                         default:
-                            //RefreshEcran(Carte,renderer);
+                            
                             break;
                         
                     }
                     
                 default:
-                    //RefreshEcran(Carte,renderer);
+                    
                     break;
-            //RefreshEcran(Carte,renderer);
+           
             }
             
         }
         if(ETAT==1){
             frame_rate(24);
+           
         }
         
-        //RefreshEcran(Carte,renderer);
+        
     }
-    //SDL_RenderPresent(renderer);
-    //SDL_Delay(3000);
+   
     printf("Fin de programme \n");
     SDL_RemoveTimer( timerID );
     SDL_DestroyRenderer(renderer);
@@ -430,7 +415,121 @@ int menu(){
     return EXIT_SUCCESS;
 }
 
-//--------------------------------------------------------------------------------------------------------------
+void* Moove_Perso(){
+    int choix_moove=0;
+    int parterne[]={0,2,4,1,0,10,2,2,4,1,1};
+    if(automatisation==2){
+
+    for(int i=0;i<11;i++){
+       
+        if(parterne[i]==0){
+             Sleep(750);
+             VecteurPositionPersonnage2.y=VecteurPositionPersonnage2.y-HAUTEUR_TILE;
+             printf("Paterne en cours \n");
+        }
+        else if(parterne[i]==1){
+             Sleep(750);
+            VecteurPositionPersonnage2.x=VecteurPositionPersonnage2.x+LARGEUR_TILE;
+            printf("Paterne en cours \n");
+           
+        }
+        else if(parterne[i]==2){
+             Sleep(750);
+             VecteurPositionPersonnage2.x=VecteurPositionPersonnage2.x-LARGEUR_TILE;
+             printf("Paterne en cours \n");
+        }
+        else if(parterne[i]==3){
+             Sleep(750);
+            VecteurPositionPersonnage2.y=VecteurPositionPersonnage2.y+HAUTEUR_TILE;
+            printf("Paterne en cours \n");
+        }
+        else if(parterne[i]==10){
+            Sleep(750);
+        }
+        else{
+             Sleep(250);
+            creation_bombe2(COMPTEUR_BOMBE,Carte,renderer);
+            
+            printf("Paterne en cours \n");
+        }
+        
+    }
+}
+    
+    
+     int res;
+     Sleep(750);
+     printf("VecteurPositionPersonnage2: [%d][%d]",VecteurPositionPersonnage2.x/50,VecteurPositionPersonnage2.y/50);
+     while(automatisation%2==0){
+        
+        choix_moove=rand()%5;
+        printf("Valeur Automatisation %d \n",automatisation);
+        printf("CHoix_Moove : %d \n",choix_moove);
+       
+    switch(choix_moove){
+        case 0:
+            Sleep(500);
+           
+            res = blocage2(Carte,SDLK_o);
+            if(res==0){
+           
+           
+           VecteurPositionPersonnage2.y=VecteurPositionPersonnage2.y-HAUTEUR_TILE;
+          
+          
+            }
+            break;
+        case 1:
+            Sleep(500);
+            
+            res = blocage2(Carte,SDLK_m);
+            if(res==0){
+          
+           
+            VecteurPositionPersonnage2.x=VecteurPositionPersonnage2.x+LARGEUR_TILE;
+           
+            }
+            break;
+        case 2:
+            Sleep(500);
+            
+            res = blocage2(Carte,SDLK_k);
+            if(res==0){
+        
+           
+            VecteurPositionPersonnage2.x=VecteurPositionPersonnage2.x-LARGEUR_TILE;
+            
+           
+          
+            }
+            break;
+        case 3:
+            Sleep(500);
+           
+            res = blocage2(Carte,SDLK_l);
+            if(res==0){
+          
+           
+            VecteurPositionPersonnage2.y=VecteurPositionPersonnage2.y+HAUTEUR_TILE;
+           
+            }
+            break;
+        case 4:
+            Sleep(500);
+           
+            if(COMPTEUR_BOMBE==0){
+                creation_bombe2(COMPTEUR_BOMBE,Carte,renderer);
+            }
+            else{
+                printf("Impossible \n");
+            }
+            
+    }
+     
+    }
+    return NULL;
+}
+
 void frame_rate(int fps) {
     static Uint32 prev_ticks = 0;
     Uint32 ticks = SDL_GetTicks();
@@ -438,6 +537,21 @@ void frame_rate(int fps) {
     if (ticks - prev_ticks < min_ticks) {
         SDL_Delay(min_ticks - (ticks - prev_ticks));
          RefreshEcran(Carte,renderer);
+        
+         
+    }
+    prev_ticks = SDL_GetTicks();
+   
+}
+
+void LimiteActionBot(int actionPerSeconde) {
+    static Uint32 prev_ticks = 0;
+    Uint32 ticks = SDL_GetTicks();
+    Uint32 min_ticks = 1000 / actionPerSeconde;
+    if (ticks - prev_ticks < min_ticks) {
+        SDL_Delay(min_ticks - (ticks - prev_ticks));
+         
+         Moove_Perso();
     }
     prev_ticks = SDL_GetTicks();
    
@@ -445,26 +559,18 @@ void frame_rate(int fps) {
 
 
 
-
 void creation_bombe(int compB,int map[13][13],SDL_Renderer* rendu){
      pthread_t AffichageBombe;
-     //Liste_Args.map=map;
-     //Liste_Args.compteurBombe=2;
-     //Liste_Args.fenetre=ecran;
+     
      for(int i=0;i<13;i++){
         for(int j=0;j<13;j++){
             Liste_Args.map[i][j]=map[i][j];
         }
      }
      pthread_create(&AffichageBombe,NULL,gestion_bombe,&Liste_Args);
-     // timerID= SDL_AddTimer(2000,gestion_bombe_test,NULL);
-    // pthread_join(AffichageBombe,NULL);  //problème block le main si présent mais sans , aucun return sur la structure
-     //;
-     //printf("Valeur apres creation_bombe %d \n",Liste_Args.compteurBombe);
+     
      printf("Fin du pthread_create \n");
-    // Sleep(2000);
-     //SDL_RemoveTimer( timerID );
-    //RefreshEcran(Carte,rendu);
+  
 
 }
 Uint32 gestion_bombe_test(){
@@ -472,26 +578,22 @@ Uint32 gestion_bombe_test(){
     int coX=VecteurPositionPersonnage.x/50;
     int coY=VecteurPositionPersonnage.y/50;
     Carte[coX][coY]=BOMBE;
-   // RefreshEcran(Carte,renderer);
+  
     return 1;
 }
 void creation_bombe2(int compB,int map[13][13],SDL_Renderer* rendu){
      pthread_t AffichageBombe;
-     //Liste_Args.map=map;
-     //Liste_Args.compteurBombe=2;
-     //Liste_Args.fenetre=ecran;
+  
      for(int i=0;i<13;i++){
         for(int j=0;j<13;j++){
             Liste_Args.map[i][j]=map[i][j];
         }
      }
      pthread_create(&AffichageBombe,NULL,gestion_bombe2,&Liste_Args);
-     //pthread_join(AffichageBombe,NULL);  //problème block le main si présent mais sans , aucun return sur la structure
-     //;
-     //printf("Valeur apres creation_bombe %d \n",Liste_Args.compteurBombe);
+     
      printf("Fin du pthread_create \n");
      
-    //RefreshEcran(Carte,rendu);
+    
 
 }
 /* Fonction gestion_bombe2
@@ -507,55 +609,41 @@ void creation_bombe2(int compB,int map[13][13],SDL_Renderer* rendu){
  */
 
 void* gestion_bombe2(void* arg){
-    //SDL_Surface* AffichageBomb=IMG_Load("img/bomb.png");
-   // SDL_Texture* texture=NULL;
-   // BT* liste_args=arg;
-    //liste_args->compteurBombe++;
-    
-   // int compteur_bombe=0;
+   
     printf("La bombe va explose");
     
-   // extern Liste_Args
-   
-    //printf("%d\n",liste_args->compteurBombe);
+  
 
     int COX_Perso=VecteurPositionPersonnage2.x/50;
     int COY_Perso=VecteurPositionPersonnage2.y/50;
     
         
-    //printf("Coo au pif : %d \n",liste_args->map[0][0]);
-    //printf("Valeur CoX, CoY : %d %d ",COX_Perso,COY_Perso);
+    
     if(Carte[COX_Perso][COY_Perso]==CHEMIN){
         
-       // printf("Depot de bombe possible\n");
-        // SDL_Surface* AffichageBomb=IMG_Load("img/bomb.png");
-        // SDL_Texture* texture=NULL;
+      
         printf("Valeur Bombe Liste_Args %d \n",compteurBombe);
         if(compteurBombe!=0){
             printf("Bombe deja actif \n");
-            // int i=VecteurPositionPersonnage.x/50;
-            // int j=VecteurPositionPersonnage.y/50;
-            // Carte[i][j]=CHEMIN;
+           
         }
         else{
-            // texture=SDL_CreateTextureFromSurface(Liste_Args.rendu,AffichageBomb);
-            // SDL_RenderCopy(Liste_Args.rendu, texture, NULL, &VecteurPositionPersonnage);
+            
             int i=VecteurPositionPersonnage2.x/50;
             int j=VecteurPositionPersonnage2.y/50;
             Carte[i][j]=BOMBE;
-            //RefreshEcran(Carte,renderer);
-           // SDL_RenderPresent(Liste_Args.rendu);
+           
             compteurBombe++;
             SDL_Delay(2000);
             ExplosionInGame(i,j,2);
             if(Carte[COX_Perso-1][COY_Perso]==BOMBE_EXPLOSION){
-                //printf("Coo au pif Ancienne version: %d \n",liste_args->map[0][0]);
+                
             
                 
             
                 
                 Carte[COX_Perso-1][COY_Perso]=CHEMIN;
-                //printf("Coo au pif New version: %d \n",liste_args->map[COX_Perso-1][COY_Perso]);
+                
             }
             if(Carte[COX_Perso][COY_Perso-1]==BOMBE_EXPLOSION){
                 
@@ -589,30 +677,16 @@ void* gestion_bombe2(void* arg){
     }
     else{
         printf("Impossible de pose la bombe \n");
-        //  int i=VecteurPositionPersonnage2.x/50;
-        //     int j=VecteurPositionPersonnage2.y/50;
-        // Carte[i][j]=CHEMIN;
+       
         return NULL;
     }
      
     
     printf("La bombe a explose \n");
     
-    // for(int i=0;i<13;i++){
-    //                             for(int j=0;j<13;j++){
-    //                                 //printf("Valeur Liste %d \n",Liste_Args.map[i][j]);
-    //                                 Carte[i][j]=Liste_Args.map[i][j];
-    //                                 //printf("Valeur carte %d \n",Carte[i][j]);
-    //                             }
-    //                         }
+    
      ConditionVictoire(Carte,2,COX_Perso,COY_Perso);
-    //  Carte[11][10]=WIN;
-    //     Carte[10][11]=WIN;
-     //Sleep(1000);
-    // printf("Valeur Liste chemin in function %d \n",Liste_Args.map[2][2]);
-    // printf("Valeur Liste rocher in function %d \n",Liste_Args.map[2][1]);
-    // //pthread_join(AffichageBombe,NULL);
-    //RefreshEcran(Carte,Liste_Args.rendu);
+    
     
     return 0;
 }
@@ -630,61 +704,43 @@ void* gestion_bombe2(void* arg){
  */
 void* gestion_bombe(void* arg){
    
-    //SDL_Surface* AffichageBomb=IMG_Load("img/bomb.png");
-   // SDL_Texture* texture=NULL;
-   // BT* liste_args=arg;
-    //liste_args->compteurBombe++;
-    
-   // int compteur_bombe=0;
+  
     printf("La bombe va explose");
     
-   // extern Liste_Args
    
-    //printf("%d\n",liste_args->compteurBombe);
 
     int COX_Perso=VecteurPositionPersonnage.x/50;
     int COY_Perso=VecteurPositionPersonnage.y/50;
     
         
-    //printf("Coo au pif : %d \n",liste_args->map[0][0]);
-    //printf("Valeur CoX, CoY : %d %d ",COX_Perso,COY_Perso);
+    
     if(Liste_Args.map[COX_Perso][COY_Perso]==CHEMIN){
         
-        // printf("Depot de bombe possible\n");
-        // SDL_Surface* AffichageBomb=IMG_Load("img/bomb.png");
-        // SDL_Texture* texture=NULL;
+       
         printf("Valeur Bombe Liste_Args %d \n",Liste_Args.compteurBombe);
         if(Liste_Args.compteurBombe!=0){
             printf("Bombe deja actif \n");
-            // int i=VecteurPositionPersonnage.x/50;
-            // int j=VecteurPositionPersonnage.y/50;
-            // Carte[i][j]=CHEMIN;
+            
         }
         else{
-            // texture=SDL_CreateTextureFromSurface(Liste_Args.rendu,AffichageBomb);
-            // SDL_RenderCopy(Liste_Args.rendu, texture, NULL, &VecteurPositionPersonnage);
+            
             int i=VecteurPositionPersonnage.x/50;
             int j=VecteurPositionPersonnage.y/50;
             Carte[i][j]=BOMBE;
-            //RefreshEcran(Carte,renderer2);
-           // SDL_RenderPresent(Liste_Args.rendu);
+           
             Liste_Args.compteurBombe++;
             SDL_Delay(2000);
-           // RefreshEcran(Carte,Liste_Args.rendu);
-            //printf("entre dans refresh ecran \n");
-    
-            //printf("Rendu FINI!!!!!!!!!!!!!!!!!! \n");
-            ExplosionInGame(i,j,1); /* ICI ON DOIT RAFRAICHIR QUAND SA EXPLOSE*/
-            //RefreshEcran(Carte,Liste_Args.rendu);
-            /* Modification de la carte après l'explosion */
+          
+            ExplosionInGame(i,j,1); 
+           
             if(Carte[COX_Perso-1][COY_Perso]==BOMBE_EXPLOSION){
-                //printf("Coo au pif Ancienne version: %d \n",liste_args->map[0][0]);
+                
             
                 
             
                 
                 Carte[COX_Perso-1][COY_Perso]=CHEMIN;
-                //printf("Coo au pif New version: %d \n",liste_args->map[COX_Perso-1][COY_Perso]);
+                
             }
             if(Carte[COX_Perso][COY_Perso-1]==BOMBE_EXPLOSION){
                 
@@ -718,32 +774,16 @@ void* gestion_bombe(void* arg){
     }
     else{
         printf("Impossible de pose la bombe \n");
-        //  int i=VecteurPositionPersonnage.x/50;
-        //     int j=VecteurPositionPersonnage.y/50;
-        // Carte[i][j]=CHEMIN;
+       
         return NULL;
     }
      
     
     printf("La bombe a explose \n");
-    /* On remet les valeurs dans la carte principal (par soucis de syncro)*/
-    // for(int i=0;i<13;i++){
-    //                             for(int j=0;j<13;j++){
-    //                                 //printf("Valeur Liste %d \n",Liste_Args.map[i][j]);
-    //                                 Carte[i][j]=Liste_Args.map[i][j];
-    //                                 //printf("Valeur carte %d \n",Carte[i][j]);
-    //                             }
-    //                         }
-    /* On test si qq à gagner*/
+    
     ConditionVictoire(Carte,1,COX_Perso,COY_Perso);
     
-    //RefreshEcran(Carte,renderer2);
-    // Carte[11][10]=WIN;
-    // Carte[10][11]=WIN;
-    // printf("Valeur Liste chemin in function %d \n",Liste_Args.map[2][2]);
-    // printf("Valeur Liste rocher in function %d \n",Liste_Args.map[2][1]);
-    // //pthread_join(AffichageBombe,NULL);
-    //RefreshEcran(Carte,Liste_Args.rendu);
+    
     
     return 0;
 }
@@ -764,10 +804,10 @@ void SauvegardeGame(int carte[13][13]){
     printf("Sauvegarde en cours \n");
     FILE *fp;
     char temp[10];
-    /* On ouvre le fichier*/
+    
 	fp=fopen("sauvegarde.txt","w");
 	if(fp==NULL){
-        /* Cas où le fichier est illisible*/
+        
 		printf("erreur ouverture sauvegarde");
 	}
 	else{
@@ -776,26 +816,14 @@ void SauvegardeGame(int carte[13][13]){
         for(int i=0;i<13;i++){
             for(int j=0;j<13;j++){
                 sprintf(temp,"%d",carte[i][j]);
-                fputs(temp,fp); /* on transforme le int en string et on le sauvegarde */
-                //fputs(" ",fp); //separe les cases dans le fichies sauvegarde (utile pour charger ensuite une partie \n");
+                fputs(temp,fp); 
                 
                 
                 
                 
             }
 	    }
-        // fputs(" ",fp);
-        // sprintf(temp,"%d",VecteurPositionPersonnage.x);
-        // fputs(temp,fp);
-        // fputs(" ",fp);
-        // sprintf(temp,"%d",VecteurPositionPersonnage.y);
-        // fputs(temp,fp);
-        // fputs(" ",fp);
-        // sprintf(temp,"%d",VecteurPositionPersonnage2.x);
-        // fputs(temp,fp);
-        // fputs(" ",fp);
-        // sprintf(temp,"%d",VecteurPositionPersonnage2.y);
-        // fputs(temp,fp);
+       
 	}
    
     fclose(fp);
@@ -815,72 +843,55 @@ void SauvegardeGame(int carte[13][13]){
 
 void ChargementGame(int carte[13][13]){
     FILE *fp;
-    /* On ouvre le fichier*/
+    
 	fp=fopen("sauvegarde.txt","r");
     printf("Valeur [%d]",VecteurPositionPersonnage.x);
      printf("Valeur [%d]",VecteurPositionPersonnage.y);
     char parcourt;
-    /* Mes variables de parcourt de carte*/
+    
     int i=0;
     int j=0;
     if(fp==NULL){
-            /* Cas où le fichier est illisible*/
+            
             printf("erreur ouverture sauvegarde");
         }
     else{
-       // printf("Fichier correctement ouvert \n");
-        while(parcourt!=EOF){ /* Tant que le fichier n'est pas fini*/
-            //printf("Dans le while \n");
+       
+        while(parcourt!=EOF){ 
             parcourt=fgetc(fp);
-           // printf("Lecture du fichier: %c\n",parcourt);
-            if(parcourt=='0'){ /* On met la valeur à chemin*/
+           
+            if(parcourt=='0'){ 
                 carte[i][j]=CHEMIN;
-               // printf("Chargement des chemins \n");
+               
             }
-            else if(parcourt=='1'){ /* idem avec mur*/
+            else if(parcourt=='1'){ 
                 carte[i][j]=MUR;
-                //printf("Chargement des murs \n");
-            }
-            else if(parcourt=='2'){/* idem avec ROCHER*/
-                carte[i][j]=ROCHER;
-                //printf("Chargement des rochers \n");
-            }
-            else if(parcourt=='3'){/* idem avec BOMBE*/
-                carte[i][j]=BOMBE;
-                //printf("Chargement des bombes \n");
-            }
-            // else if(parcourt==' '){
-            //     char temp;
-            //     printf("Entre dans le parcourt \n");
-            //     while(temp!=' '){
-            //         temp=fgetc(fp);
-            //     }
-            //     printf("Affichage du temp %c \n",temp);
-            //     //VecteurPositionPersonnage=itoa(temp);
                 
-            // }
+            }
+            else if(parcourt=='2'){
+                carte[i][j]=ROCHER;
+                
+            }
+            else if(parcourt=='3'){
+                carte[i][j]=BOMBE;
+                
+            }
+            
             else{
                 printf("Autre cas (espace) \n");
-                //char temp;
-                //char ValeurEnString[10];
-                //printf("Entre dans le parcourt \n");
-                // while(temp!=' '){
-                //     temp=fgetc(fp);
-                //     //strcat(ValeurEnString,temp);
-                // }
-                //printf("Affichage du temp: %s \n",ValeurEnString);
+                
             }
-            j++; // On change de case
-            if(j==13){ // si la ligne est plein
-                j=0; // on remet à 0 le j est on augment le i
-                //printf("Remise a zero \n");
+            j++; 
+            if(j==13){ 
+                j=0; 
+                
                 i++;
             }
             
         }
         }
-       // printf("Fermture du fichier \n");
-    fclose(fp); /* Fermeture du fichier*/
+       
+    fclose(fp); 
 }
 
 /* Fonction CreationMap
@@ -908,23 +919,19 @@ void CreationMap(SDL_Renderer* rendu, int map[13][13]){
     VecteurPositionPersonnage2.x=550;
     VecteurPositionPersonnage2.w=LARGEUR_TILE;
     VecteurPositionPersonnage2.h=HAUTEUR_TILE;
-    SDL_Rect VecteurPosition; //Vecteur qui me permet de parcourir toute la fenetre avec des dimensions CONNUES
+    SDL_Rect VecteurPosition; 
     SDL_Surface* AffichageTiles=IMG_Load("img/Bamboo-Bloc.png");
     SDL_Surface* AffichageMurs=IMG_Load("img/Rock-Bloc.png");
     SDL_Surface* AffichageChemin=IMG_Load("img/Chemin.png");
-   // SDL_Surface* AfficheP1=IMG_Load("Img/pow.png");
-    //SDL_Surface* AffichageBomb=IMG_Load("img/bomb.png");
+ 
     SDL_Texture* texture=NULL;
     SDL_Texture* texture2=NULL;
     SDL_Texture* texture3=NULL;
-   // SDL_Texture* texture4=NULL;
-    //SDL_Texture* texture4=NULL;
+  
     texture=SDL_CreateTextureFromSurface(rendu,AffichageTiles);
     texture2=SDL_CreateTextureFromSurface(rendu,AffichageMurs);
     texture3=SDL_CreateTextureFromSurface(rendu,AffichageChemin);
-   // texture4=SDL_CreateTextureFromSurface(rendu,AfficheP1);
-    //texture4=SDL_CreateTextureFromSurface(rendu,AffichageBomb);
-    //int map[13][13];
+  
    
     VecteurPosition.w=LARGEUR_TILE;
     VecteurPosition.h=HAUTEUR_TILE;
@@ -934,23 +941,18 @@ void CreationMap(SDL_Renderer* rendu, int map[13][13]){
        
 
 
-    for(int i=0;i<13;i++){// J est un ligne, I est une colonne
+    for(int i=0;i<13;i++){
         for(int j=0;j<13;j++){
-            //printf("Case %d/%d \n",i,j);
+           
            
             if(j%2!=0 && i%2==0 &&j>0 && i>0 &&j<12 && i<12){
-                //printf("Debug");
+                
                 Carte[i][j]=ROCHER;
                 VecteurPosition.x=i*LARGEUR_TILE;
                 VecteurPosition.y=j*HAUTEUR_TILE;
                 SDL_RenderCopy(rendu, texture2, NULL, &VecteurPosition);
             }
-            // else if(i==choixX && j==choixY){
-            //     Carte[i][j]=POW;
-            //      VecteurPosition.x=i*LARGEUR_TILE;
-            //     VecteurPosition.y=j*HAUTEUR_TILE;
-            //     SDL_RenderCopy(rendu, texture4, NULL, &VecteurPosition);
-            // }
+           
             else if(i==11 && j==10){
                 Carte[i][j]=CHEMIN;
                 VecteurPosition.x=i*LARGEUR_TILE;
@@ -976,21 +978,21 @@ void CreationMap(SDL_Renderer* rendu, int map[13][13]){
                 SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
             }
             else if(j%2==0 && i%2!=0 &&j>0 && i>0 &&j<12 && i<12) {
-                //printf("Debug");
+                
                 Carte[i][j]=ROCHER;
                 VecteurPosition.x=i*LARGEUR_TILE;
                 VecteurPosition.y=j*HAUTEUR_TILE;
                 SDL_RenderCopy(rendu, texture2, NULL, &VecteurPosition);
             }  
             else if(j%2==0 && i%2==0 &&j>0 && i>0 &&j<12 && i<12){
-                 //printf("Debug");
+                 
                  Carte[i][j]=CHEMIN;
                 VecteurPosition.x=i*LARGEUR_TILE;
                 VecteurPosition.y=j*HAUTEUR_TILE;
                 SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
             }  
             else if(j%2!=0 && i%2!=0 &&j>0 && i>0 &&j<12 && i<12){
-                 //printf("Debug");
+                
                  Carte[i][j]=CHEMIN;
                 VecteurPosition.x=i*LARGEUR_TILE;
                 VecteurPosition.y=j*HAUTEUR_TILE;
@@ -1012,28 +1014,9 @@ void CreationMap(SDL_Renderer* rendu, int map[13][13]){
     printf("Un PowerUp est apparu en [%d][%d] \n",choixX,choixY);
     Carte[choixX][choixY]=POW;
    
-    // Carte[1][2]=CHEMIN;
-    // VecteurPosition.x=1*LARGEUR_TILE;
-    // VecteurPosition.y=2*HAUTEUR_TILE;
-    // SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
-    // Carte[2][1]=CHEMIN;
-    //  VecteurPosition.x=2*LARGEUR_TILE;
-    // VecteurPosition.y=1*HAUTEUR_TILE;
-    // SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
-    // Carte[11][10]=CHEMIN;
-    //  VecteurPosition.x=11*LARGEUR_TILE;
-    // VecteurPosition.y=10*HAUTEUR_TILE;
-    // SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
-    // Carte[10][11]=CHEMIN;
-    //  VecteurPosition.x=10*LARGEUR_TILE;
-    // VecteurPosition.y=11*HAUTEUR_TILE;
-    // SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition);
+    
     SDL_RenderPresent(rendu);
-    //Carte[10][11]=LOOSE;
-    //RefreshEcran(Carte,rendu);
    
-    //SDL_Delay(6000);
-    //return NULL;
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -1049,17 +1032,17 @@ void CreationMap(SDL_Renderer* rendu, int map[13][13]){
  */
 
 void InitialisationJoeur(SDL_Renderer* rendu, int map[13][13]){
-    /* Chargement des textures*/
-    SDL_Rect VecteurPosition; //Vecteur qui me permet de parcourir toute la fenetre avec des dimensions CONNUES
+    
+    SDL_Rect VecteurPosition; 
     SDL_Surface* AffichagePersonnage=IMG_Load("img/Po-PD.png");
     SDL_Texture* Personnage1=NULL;
-    /* Fin de chargement*/
+   
     VecteurPosition.w=LARGEUR_TILE;
     VecteurPosition.h=HAUTEUR_TILE;
     Personnage1=SDL_CreateTextureFromSurface(rendu,AffichagePersonnage);
     VecteurPosition.x=LARGEUR_TILE;
     VecteurPosition.y=HAUTEUR_TILE;
-    /* Affichage du personnage*/
+    
     SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPosition);
 }
 /* Fonction InitialisationJoeur2
@@ -1074,18 +1057,12 @@ void InitialisationJoeur(SDL_Renderer* rendu, int map[13][13]){
  */
 
 void InitialisationJoeur2(SDL_Renderer* rendu, int map[13][13]){
-   // SDL_Rect VecteurPosition; //Vecteur qui me permet de parcourir toute la fenetre avec des dimensions CONNUES
-   /* Chargement des textures*/
+  
     SDL_Surface* AffichagePersonnage=IMG_Load("img/Maitre_Singe.bmp");
     SDL_Texture* Personnage1=NULL;
-    //VecteurPosition.w=LARGEUR_TILE;
-    //VecteurPosition.h=HAUTEUR_TILE;
+   
     Personnage1=SDL_CreateTextureFromSurface(rendu,AffichagePersonnage);
-    /* Fin de chargement*/
-    //VecteurPosition.x=LARGEUR_TILE;
-    //VecteurPosition.y=HAUTEUR_TILE;
-
-    /* Affichage du personnage*/
+   
     SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage2);
 }
 
@@ -1106,22 +1083,21 @@ void InitialisationJoeur2(SDL_Renderer* rendu, int map[13][13]){
 
 void DeplacementPersonnage(SDL_Renderer* rendu,int touche,int Carte[13][13]){
    
-    /* Chargement des textures*/
+    
     SDL_Surface* AffichagePersonnage=IMG_Load("img/Po-PD.png");
     SDL_Texture* Personnage1=NULL;
     Personnage1=SDL_CreateTextureFromSurface(rendu,AffichagePersonnage);
-    /* Fin de chargement */
+    
 
 
-    /* On test la touche appuyé (si res est différent de 0 , alors le déplacement est impossible)*/
+    
     if (touche==122){
         int res = blocage(Carte,touche);
         if(res==0){
-            //RefreshEcran(Carte,rendu );
-            /* On modifie son VecteurPosition en fonction de la touche*/
+            
             VecteurPositionPersonnage.y=VecteurPositionPersonnage.y-HAUTEUR_TILE;
             printf("Deplacement vers le haut\n");
-            /* On affiche la modification*/
+            
             SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage);
             SDL_RenderPresent(rendu);
         }
@@ -1129,11 +1105,10 @@ void DeplacementPersonnage(SDL_Renderer* rendu,int touche,int Carte[13][13]){
     else if(touche==113){
         int res = blocage(Carte,touche);
         if(res==0){
-            //RefreshEcran(Carte,rendu );
-            /* On modifie son VecteurPosition en fonction de la touche*/
+            
             VecteurPositionPersonnage.x=VecteurPositionPersonnage.x-LARGEUR_TILE;
             printf("Deplacement vers le gauche\n");
-            /* On affiche la modification*/
+            
             SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage);
             SDL_RenderPresent(rendu);
         }
@@ -1142,11 +1117,10 @@ void DeplacementPersonnage(SDL_Renderer* rendu,int touche,int Carte[13][13]){
     else if(touche==115){
         int res = blocage(Carte,touche);
         if(res==0){
-            //RefreshEcran(Carte,rendu );
-            /* On modifie son VecteurPosition en fonction de la touche*/
+            
             VecteurPositionPersonnage.y=VecteurPositionPersonnage.y+HAUTEUR_TILE;
             printf("Deplacement vers le bas\n");
-            /* On affiche la modification*/
+           
             SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage);
             SDL_RenderPresent(rendu);
         }
@@ -1155,11 +1129,10 @@ void DeplacementPersonnage(SDL_Renderer* rendu,int touche,int Carte[13][13]){
     else{
         int res = blocage(Carte,touche);
         if(res==0){
-            //RefreshEcran(Carte,rendu);
-            /* On modifie son VecteurPosition en fonction de la touche*/
+            
             VecteurPositionPersonnage.x=VecteurPositionPersonnage.x+LARGEUR_TILE;
             printf("Deplacement vers la droite\n");
-            /* On affiche la modification*/
+            
             SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage);
             SDL_RenderPresent(rendu);
         }
@@ -1195,21 +1168,20 @@ void DeplacementPersonnage(SDL_Renderer* rendu,int touche,int Carte[13][13]){
 
 void DeplacementPersonnage2(SDL_Renderer* rendu,int touche,int Carte[13][13]){
    
-    /* Chargement des textures*/
+   
     SDL_Surface* AffichagePersonnage=IMG_Load("img/Maitre_Singe.bmp");
     SDL_Texture* Personnage1=NULL;
     Personnage1=SDL_CreateTextureFromSurface(rendu,AffichagePersonnage);
-    /* Fin de chargement */
+   
 
-    /* On test la touche appuyé (si res est différent de 0 , alors le déplacement est impossible)*/
+   
     if (touche==SDLK_o){
         int res = blocage2(Carte,touche);
         if(res==0){
-           // RefreshEcran(Carte,rendu );
-            /* On modifie son VecteurPosition en fonction de la touche*/
+          
             VecteurPositionPersonnage2.y=VecteurPositionPersonnage2.y-HAUTEUR_TILE;
             printf("Deplacement vers le haut\n");
-            /* On affiche la modification*/
+           
             SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage2);
             SDL_RenderPresent(rendu);
         }
@@ -1218,13 +1190,13 @@ void DeplacementPersonnage2(SDL_Renderer* rendu,int touche,int Carte[13][13]){
         int res = blocage2(Carte,touche);
         printf("Test");
         if(res==0){
-            //RefreshEcran(Carte,rendu );
+           
             printf("Test dans le res");
-            /* On modifie son VecteurPosition en fonction de la touche*/
+           
             VecteurPositionPersonnage2.x=VecteurPositionPersonnage2.x-LARGEUR_TILE;
             printf("Deplacement vers le gauche\n");
             printf("%d %d ",VecteurPositionPersonnage2.x,VecteurPositionPersonnage2.y);
-            /* On affiche la modification*/
+           
             SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage2);
             SDL_RenderPresent(rendu);
         }
@@ -1233,11 +1205,10 @@ void DeplacementPersonnage2(SDL_Renderer* rendu,int touche,int Carte[13][13]){
     else if(touche==SDLK_l){
         int res = blocage2(Carte,touche);
         if(res==0){
-            //RefreshEcran(Carte,rendu );
-            /* On modifie son VecteurPosition en fonction de la touche*/
+           
             VecteurPositionPersonnage2.y=VecteurPositionPersonnage2.y+HAUTEUR_TILE;
             printf("Deplacement vers le bas\n");
-            /* On affiche la modification*/
+           
             SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage2);
             SDL_RenderPresent(rendu);
         }
@@ -1246,11 +1217,10 @@ void DeplacementPersonnage2(SDL_Renderer* rendu,int touche,int Carte[13][13]){
     else{
         int res = blocage2(Carte,touche);
         if(res==0){
-            //RefreshEcran(Carte,rendu);
-            /* On modifie son VecteurPosition en fonction de la touche*/
+           
             VecteurPositionPersonnage2.x=VecteurPositionPersonnage2.x+LARGEUR_TILE;
             printf("Deplacement vers la droite\n");
-            /* On affiche la modification*/
+          
             SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage2);
             SDL_RenderPresent(rendu);
         }
@@ -1288,11 +1258,11 @@ void DeplacementPersonnage2(SDL_Renderer* rendu,int touche,int Carte[13][13]){
 int blocage2(int map[13][13],int touche){
 
     int V1=0;
-    /* On récupère les coordonées actuels du personnage*/
+   
     int CoX=VecteurPositionPersonnage2.x/50;
     int CoY=VecteurPositionPersonnage2.y/50;
     printf("%d %d ",CoX,CoY);
-    /* on test en fonction du déplacement, si la case est libre*/
+    
     if(touche==SDLK_o){
         V1=map[CoX][CoY-1];
         if(V1==MUR || V1==ROCHER){
@@ -1326,9 +1296,7 @@ int blocage2(int map[13][13],int touche){
         return 0;
     }
     return -1;
-    /* return 0 indique que le déplacement est possible
-       return -1 indique que le déplacement n'est pas possible ou qu'une erreur est apparu 
-    */
+   
 
 }
 
@@ -1347,14 +1315,14 @@ int blocage2(int map[13][13],int touche){
 int blocage(int map[13][13],int touche){
 
     int V1=0;
-    /* On récupère les coordonées actuels du personnage*/
+   
     int CoX=VecteurPositionPersonnage.x/50;
     int CoY=VecteurPositionPersonnage.y/50;
 
-    /* on test en fonction du déplacement, si la case est libre*/
+   
     if(touche==122){
         V1=map[CoX][CoY-1];
-        if(V1==MUR /*|| V1==ROCHER */){
+        if(V1==MUR || V1==ROCHER ){
             printf("bloquer haut\n");
             return -1;
         }
@@ -1362,7 +1330,7 @@ int blocage(int map[13][13],int touche){
     }
     if(touche==115){
         V1=map[CoX][CoY+1];
-        if(V1==MUR /*|| V1==ROCHER */){
+        if(V1==MUR || V1==ROCHER ){
             printf("bloquer bas\n");
             return -1;
         }
@@ -1370,7 +1338,7 @@ int blocage(int map[13][13],int touche){
     }
     if(touche==113){
         V1=map[CoX-1][CoY];
-        if(V1==MUR /*|| V1==ROCHER */){
+        if(V1==MUR || V1==ROCHER ){
             printf("bloquer gauche\n");
             return -1;
         }
@@ -1378,18 +1346,16 @@ int blocage(int map[13][13],int touche){
     }
     if(touche==100){
         V1=map[CoX+1][CoY];
-        if(V1==MUR /*|| V1==ROCHER */){
+        if(V1==MUR || V1==ROCHER ){
             printf("bloquer droite\n");
             return -1;
         }
         return 0;
     }
     return -1;
-    /* return 0 indique que le déplacement est possible
-       return -1 indique que le déplacement n'est pas possible ou qu'une erreur est apparu 
-    */
+    
 }
-//--------------------------------------------------------------------------------------------------------------
+
 
 /* Fonction RefreshEcran
  
@@ -1405,73 +1371,59 @@ int blocage(int map[13][13],int touche){
  */
 
 void RefreshEcran(int map[13][13],SDL_Renderer* rendu){
-    //printf("entre dans refresh ecran \n");
-    /* On efface ce qui était présent dans le rendu (des résidus que l'on ne veut pas dans l'affichage)*/
+    
    if(SDL_RenderClear(rendu)==0){
-    //printf("Rendu ok \n");
+    
    };
 
-    /* Chargement de toutes les textures/images dont on a besoin pour la carte de jeu*/
+   
     
     
 
 
-    //printf("Rendu clear \n");
+   
     
     if(AffichageTiles==NULL){
         printf("Erreur chargement Tiles \n");
     }
   
-     //SDL_Surface* AffichageP1=IMG_Load("img/pow.png");
-    //printf("Chargement des surfaces finies \n");
-   
-
-    /*Fin du chargement des textures*/
-   // printf("Chargement des textures finies \n");
-    /* On définit un VecteurPosition, son but est de "parcourir" toute la fenetre de jeu pour placer au bonne endroit les textures chargées*/
+    
     VecteurPosition.w=LARGEUR_TILE;
     VecteurPosition.h=HAUTEUR_TILE;
 
-    /*On creé depuis les surfaces chargées , des textures qui seront ensuite copiées dans le rendu */
     
-
-    /* Fin de la création des textures*/
-
-    //printf("Debug Refresh"); 
-
-    /* On parcourt ensuite toute la carte */
         for(int i=0;i<13;i++){
             for(int j=0;j<13;j++){
             VecteurPosition.x=i*LARGEUR_TILE;
             VecteurPosition.y=j*HAUTEUR_TILE;
             if(map[i][j]==CHEMIN){
-                 SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition); /* On charge la bonne texture en fonction du statut de la case de la matrice*/
+                 SDL_RenderCopy(rendu, texture3, NULL, &VecteurPosition); 
             }
             else if(map[i][j]==POW){
-               // printf("Init du powerUp \n");
+               
                 SDL_RenderCopy(rendu, PowerUp, NULL, &VecteurPosition); 
             }
             else if(map[i][j]==MUR){
-                SDL_RenderCopy(rendu, texture, NULL, &VecteurPosition); /* idem*/
+                SDL_RenderCopy(rendu, texture, NULL, &VecteurPosition); 
             }
             else if(map[i][j]==ROCHER){
-                SDL_RenderCopy(rendu, texture2, NULL, &VecteurPosition);/* idem*/
+                SDL_RenderCopy(rendu, texture2, NULL, &VecteurPosition);
             }
             else if(map[i][j]==BOMBE){
-                SDL_RenderCopy(rendu,texture4,NULL,&VecteurPosition);/* idem*/
+                SDL_RenderCopy(rendu,texture4,NULL,&VecteurPosition);
             }
             else if(map[i][j]==BOMBE_EXPLOSION){
-                SDL_RenderCopy(rendu,texture5,NULL,&VecteurPosition);/* idem*/
+                SDL_RenderCopy(rendu,texture5,NULL,&VecteurPosition);
             }
             
-            else if(map[0][0]==WIN){   /* Cas un peu spécial lorsqu'on perd/gagne */
-                VecteurPosition.x=0; /* On modifie le Vecteur position pour qu'il se place à l'origine */
+            else if(map[0][0]==WIN){   
+                VecteurPosition.x=0; 
                 VecteurPosition.y=0;
-                VecteurPosition.h=13*HAUTEUR_TILE; /* On joue ensuite sur la hauteur et la largeur pour que l'image prennent toute la fenetre*/
+                VecteurPosition.h=13*HAUTEUR_TILE; 
                 VecteurPosition.w=13*HAUTEUR_TILE;
                 SDL_RenderCopy(rendu, Win, NULL, &VecteurPosition);
             }
-            else if(map[0][0]==LOOSE){/* Cas un peu spécial lorsqu'on perd/gagne */
+            else if(map[0][0]==LOOSE){
                 VecteurPosition.x=0;
                 VecteurPosition.y=0;
                 VecteurPosition.h=13*HAUTEUR_TILE;
@@ -1479,22 +1431,16 @@ void RefreshEcran(int map[13][13],SDL_Renderer* rendu){
                 SDL_RenderCopy(rendu, Loose, NULL, &VecteurPosition);
             }
             
-            // else if (map[i][j]==POW){
-            //     SDL_RenderCopy(rendu, texture6, NULL, &VecteurPosition);
-            // }
+           
 
         }
     }
-    /* On oublie pas de placer également les personnages sur la carte en fonction de leurs propres vecteurPositions*/
+   
     SDL_RenderCopy(rendu, Personnage2, NULL, &VecteurPositionPersonnage2);
     SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage);
-    //printf("Rendu en cours \n");
-    /* On Affiche ensuite la modification*/
-    //printf("Valeur qui bug dans le refresh ecran quand la game se termine : %d \n",Carte[10][11]);
+   
     SDL_RenderPresent(rendu);
-    //Sleep(2000);
-    //SDL_RenderClear(rendu);
-    //printf("Rendu fini \n");
+   
 }
 
 /* Fonction AfficheEndGame
@@ -1534,7 +1480,7 @@ void AfficheEndGame(){
             }
         SDL_RenderPresent(renderer);
 }
-//--------------------------------------------------------------------------------------------------------------
+
 
 /* Fonction ExplosionInGame
  
@@ -1550,103 +1496,89 @@ void AfficheEndGame(){
  */
 
 void ExplosionInGame(int CoX,int CoY,int appelPerso){
-    //printf("La bombe va explose");
-    // SDL_Surface* AffichageBomb=IMG_Load("img/Bamboo-Bloc.png");
-    // SDL_Texture* texture=NULL;
     
-   
-    //     texture=SDL_CreateTextureFromSurface(rendu,AffichageBomb);
-    //     SDL_RenderCopy(rendu, texture, NULL, &VecteurPositionPersonnage);
-        
-        /* Ici, on test les 4 cas possibles
-           On fait bien attention de tester seulement si les TILES autour de la bombe sont des rochers
-           ou des chemins pour modifier leurs statuts car on ne veut pas modifier par exemple le statut d'un mur indestructible
-        */
 
         int V1=Carte[CoX][CoY-1];
         if(V1==ROCHER || V1==CHEMIN){
             Carte[CoX][CoY-1]=BOMBE_EXPLOSION;
-            //return -1;
+            
         }
         V1=Carte[CoX-1][CoY];
         if(V1==ROCHER || V1==CHEMIN){
            Carte[CoX-1][CoY]=BOMBE_EXPLOSION;
-            //return -1;
+           
         }
         V1=Carte[CoX+1][CoY];
         if(V1==ROCHER || V1==CHEMIN){
             Carte[CoX+1][CoY]=BOMBE_EXPLOSION;
-            //return -1;
+            
         }
          V1=Carte[CoX][CoY+1];
         if(V1==ROCHER || V1==CHEMIN){
            Carte[CoX][CoY+1]=BOMBE_EXPLOSION;
-            //return -1;
+            
         }
         if(PowerUpP1POW==1 && appelPerso==1){
             V1=Carte[CoX][CoY+2];
             if(V1==ROCHER || V1==CHEMIN){
            Carte[CoX][CoY+2]=BOMBE_EXPLOSION;
-            //return -1;
+            
              }
              V1=Carte[CoX][CoY-2];
              if(V1==ROCHER || V1==CHEMIN){
            Carte[CoX][CoY-2]=BOMBE_EXPLOSION;
-            //return -1;
+            
             }
             V1=Carte[CoX+2][CoY];
             if(V1==ROCHER || V1==CHEMIN){
             Carte[CoX+2][CoY]=BOMBE_EXPLOSION;
-                //return -1;
+                
             }
             V1=Carte[CoX-2][CoY];
             if(V1==ROCHER || V1==CHEMIN){
            Carte[CoX-2][CoY]=BOMBE_EXPLOSION;
-            //return -1;
+            
             }
         }
         if(PowerUpP2POW==1 && appelPerso==2){
             V1=Carte[CoX][CoY+2];
             if(V1==ROCHER || V1==CHEMIN){
            Carte[CoX][CoY+2]=BOMBE_EXPLOSION;
-            //return -1;
+            
              }
              V1=Carte[CoX][CoY-2];
              if(V1==ROCHER || V1==CHEMIN){
            Carte[CoX][CoY-2]=BOMBE_EXPLOSION;
-            //return -1;
+            
             }
             V1=Carte[CoX+2][CoY];
             if(V1==ROCHER || V1==CHEMIN){
             Carte[CoX+2][CoY]=BOMBE_EXPLOSION;
-                //return -1;
+                
             }
             V1=Carte[CoX-2][CoY];
             if(V1==ROCHER || V1==CHEMIN){
            Carte[CoX-2][CoY]=BOMBE_EXPLOSION;
-            //return -1;
+            
             }
         }
-        //RefreshEcran(Carte,renderer);Carte[11][10]
+        
         printf("Dans l'explosion in game (rendu?) \n");
 
-        /* Actualisation de l'affichage en fonction de la modification de la carte*/
+        
        
         printf("Appel en cours de RefreshEcran avec le renderer2 \n");
-       // RefreshEcran(Carte,renderer2);
-       // SDL_RenderPresent(renderer);
+      
         SDL_Delay(500);
         
    
-        //compteur_bombe++;
+        
         
     
-    //Sleep(1000);
-    //return compteur_bombe;
+    
    
     
-    //SDL_Delay(1000);
-    //printf("Bombe Fini");
+    
 }
 
  /* Fonction ConditionVictoire
@@ -1667,48 +1599,29 @@ void ExplosionInGame(int CoX,int CoY,int appelPerso){
 void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
     
     
-    //printf("L'appel a ete fait aux coordonnes [%d][%d] \n",coX,coY);
-
-    /* Ici on va récuperer les coordonnées actualisées des 2 joueurs (car le déplacement est posssible pendant le sleep)*/
+   
     int CoX_Perso1=VecteurPositionPersonnage.x/50;
     int CoY_Perso1=VecteurPositionPersonnage.y/50;
     int CoX_Perso2=VecteurPositionPersonnage2.x/50;
     int CoY_Perso2=VecteurPositionPersonnage2.y/50;
-    //printf("Le joueur 1 est aux cordonnees [%d][%d] \n",CoX_Perso1,CoY_Perso1);
-
-    /* On test ensuite les 4 possibilités (la où la bombe explose )*/
+   
     if((CoX_Perso1==coX && CoY_Perso1==coY)|| (CoX_Perso1==coX-1 && CoY_Perso1==coY) || (CoX_Perso1==coX+1 && CoY_Perso1==coY) || (CoX_Perso1==coX && CoY_Perso1==coY-1)
     || (CoX_Perso1==coX && CoY_Perso1==coY+1)){
         if(appelPerso==1){
             printf("Le joueur 1 est mort par suicide \n");
             for(int i=0;i<13;i++){
                                 for(int j=0;j<13;j++){
-                                    //printf("Valeur Lecture map apres chargement %d \n",Carte[i][j]);
-                                    /* Modification de la carte pour actualiser l'affichage*/
+                                    
                                     Carte[i][j]=LOOSE;
-                                    //printf("Valeur carte %d \n",Carte[i][j]);
+                                   
                                 }
                             }
                             Sleep(250);
-                            // Carte[11][10]=LOOSE;
-                            // Carte[10][11]=LOOSE;
-            //AfficheEndGame();
-            // SDL_Surface* AffichageWin=IMG_Load("img/youwin.png");
-            //  SDL_Texture* Win=NULL;
-
-            // SDL_Surface* AffichageLoose=IMG_Load("img/gameover.jpg");
-            // SDL_Texture* Loose=NULL;
-            // Win=SDL_CreateTextureFromSurface(rendu,AffichageWin);
-            // Loose=SDL_CreateTextureFromSurface(rendu,AffichageLoose);
-           // RefreshEcran(Carte,renderer);
-           // Sleep(100);
+                            
             printf("valeur qui bug : %d",Carte[10][11]);
-            /* Actualisation de l'affichage en fonction de la modification de la carte*/
-             //SDL_Delay(2000);
-            //SDL_RenderClear(renderer);
-            //renderer=NULL;
+           
             printf("Appel du refresh Ecran quand le perso1 se suicide \n");
-           // RefreshEcran(Carte,renderer);
+           
            
         }
    
@@ -1717,17 +1630,14 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
             printf("Le joueur 1 est mort par la bombe du joueur 2 \n");
             for(int i=0;i<13;i++){
                                 for(int j=0;j<13;j++){
-                                    //printf("Valeur Lecture map apres chargement %d \n",Carte[i][j]);
-                                    /* Modification de la carte pour actualiser l'affichage*/
+                                    
                                     Carte[i][j]=LOOSE;
-                                    //printf("Valeur carte %d \n",Carte[i][j]);
+                                    
                                 }
                             }
             
 
-            /* Actualisation de l'affichage en fonction de la modification de la carte*/
-           // RefreshEcran(Carte,renderer);
-           // SDL_RenderClear(renderer);
+            
         }
         
     }
@@ -1743,10 +1653,9 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
         printf("Suicide avec l'augmentation \n'");
          for(int i=0;i<13;i++){
                                 for(int j=0;j<13;j++){
-                                    //printf("Valeur Lecture map apres chargement %d \n",Carte[i][j]);
-                                    /* Modification de la carte pour actualiser l'affichage*/
+                                    
                                     Carte[i][j]=LOOSE;
-                                    //printf("Valeur carte %d \n",Carte[i][j]);
+                                   
                                 }
                             }
     }
@@ -1755,30 +1664,17 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
     || (CoX_Perso2==coX && CoY_Perso2==coY+1)){
         if(appelPerso==2){
             printf("Le joueur 2 est mort par suicide \n");
-            //SDL_RenderClear(renderer);
-            //Sleep(1000);
-            // SDL_RenderCopy(renderer,Win,NULL,&VecteurPosition);
-            //  SDL_RenderPresent(renderer);
-            // SDL_RenderCopy(renderer,TexturePourEcriture,NULL,&PositionEcriture);
-            // SDL_RenderPresent(renderer);
-            // while(appelPerso){
-            //     printf("Boucle infini \n");
-            // }
+            
              for(int i=0;i<13;i++){
                                 for(int j=0;j<13;j++){
-                                    //printf("Valeur Lecture map apres chargement %d \n",Carte[i][j]);
-                                    /* Modification de la carte pour actualiser l'affichage*/
+                                    
                                     Carte[i][j]=WIN;
-                                    //printf("Valeur carte %d \n",Carte[i][j]);
+                                    
                                 }
                             }
-                           // Sleep(250);
-                            // 
-            /* Actualisation de l'affichage en fonction de la modification de la carte*/
+                           
             printf("Appel du refreshEcran quand le perso1 se suicide \n");
-          //  RefreshEcran(Carte,renderer);
-           // SDL_RenderClear(renderer);
-           // SDL_RenderClear(renderer);
+          
         }
         else if(PowerUpP2POW==1){
         printf("Entre dans la condition \n");
@@ -1792,10 +1688,9 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
         printf("Suicide avec l'augmentation \n'");
          for(int i=0;i<13;i++){
                                 for(int j=0;j<13;j++){
-                                    //printf("Valeur Lecture map apres chargement %d \n",Carte[i][j]);
-                                    /* Modification de la carte pour actualiser l'affichage*/
+                                    
                                     Carte[i][j]=LOOSE;
-                                    //printf("Valeur carte %d \n",Carte[i][j]);
+                                    
                                 }
                             }
     }
@@ -1804,19 +1699,12 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
             printf("Le joueur 2 est mort par la bombe du joueur 1 \n");
            for(int i=0;i<13;i++){
                                 for(int j=0;j<13;j++){
-                                    //printf("Valeur Lecture map apres chargement %d \n",Carte[i][j]);
-                                    /* Modification de la carte pour actualiser l'affichage*/
+                                   
                                     Carte[i][j]=WIN;
-                                    //printf("Valeur carte %d \n",Carte[i][j]);
+                                   
                                 }
                             }
-                            //Sleep(250);
-                            // Carte[11][10]=WIN;
-                            // Carte[10][11]=WIN;
-            /* Actualisation de l'affichage en fonction de la modification de la carte*/
-            //renderer=NULL;
-           // RefreshEcran(Carte,renderer);
-           // SDL_RenderClear(renderer);
+                            
         }
         
     }
@@ -1834,7 +1722,7 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY){
 
    
 
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     
 
 

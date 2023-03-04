@@ -19,3 +19,5 @@ void ConditionVictoire(int Carte[13][13],int appelPerso,int coX,int coY);
 void AfficheEndGame();
 Uint32 gestion_bombe_test();
 void frame_rate(int fps);
+void* Moove_Perso();
+void LimiteActionBot(int actionPerSeconde);
