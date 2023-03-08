@@ -2,8 +2,8 @@
 #include "../src/include/SDL2/SDL_image.h"
 #include "../src/include/SDL2/SDL_ttf.h"
 #include "../src/include/SDL2/SDL_mixer.h"
-#include"affichage.h"
-#include<time.h>
+#include "affichage.h"
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -1039,15 +1039,6 @@ void InitialisationJoeur2(SDL_Renderer *rendu, int map[13][13])
     SDL_Texture *Personnage1 = NULL;
 
     Personnage1 = SDL_CreateTextureFromSurface(rendu, AffichagePersonnage);
-
-
-void InitialisationJoeur2(SDL_Renderer* rendu, int map[13][13]){
-  
-    SDL_Surface* AffichagePersonnage=IMG_Load("img/Maitre_Singe.png");
-    SDL_Texture* Personnage1=NULL;
-   
-    Personnage1=SDL_CreateTextureFromSurface(rendu,AffichagePersonnage);
-
     SDL_RenderCopy(rendu, Personnage1, NULL, &VecteurPositionPersonnage2);
 }
 
@@ -1155,14 +1146,6 @@ void DeplacementPersonnage2(SDL_Renderer *rendu, int touche, int Carte[13][13])
     SDL_Surface *AffichagePersonnage = IMG_Load("img/Maitre_Singe.bmp");
     SDL_Texture *Personnage1 = NULL;
     Personnage1 = SDL_CreateTextureFromSurface(rendu, AffichagePersonnage);
-
-
-void DeplacementPersonnage2(SDL_Renderer* rendu,int touche,int Carte[13][13]){
-   
-   
-    SDL_Surface* AffichagePersonnage=IMG_Load("img/Maitre_Singe.png");
-    SDL_Texture* Personnage1=NULL;
-    Personnage1=SDL_CreateTextureFromSurface(rendu,AffichagePersonnage);
    
     if (touche == SDLK_o)
     {
