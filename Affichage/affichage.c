@@ -2,7 +2,6 @@
 #include "../src/include/SDL2/SDL_image.h"
 #include "../src/include/SDL2/SDL_ttf.h"
 #include "../src/include/SDL2/SDL_mixer.h"
-#include "affichage.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -233,16 +232,16 @@ int menu()
         return EXIT_FAILURE;
     }
 
-    AffichagePersonnage2 = IMG_Load("img/Maitre_Singe.bmp");
-    AffichagePersonnage = IMG_Load("img/Po-PD.png");
-    AffichageTiles = IMG_Load("img/Bamboo-Bloc.png");
-    AffichageMurs = IMG_Load("img/Rock-Bloc.png");
-    AffichageChemin = IMG_Load("img/Chemin.png");
-    AffichageBomb = IMG_Load("img/bomb.png");
-    AffichageBombExplosion = IMG_Load("img/explosion_bombe.jpg");
-    AffichageLoose = IMG_Load("img/gameover.jpg");
-    AffichageWin = IMG_Load("img/youwin.png");
-    AffichagePowerUp = IMG_Load("img/pow.png");
+    AffichagePersonnage2=IMG_Load("img/Maitre_Singe.png");
+    AffichagePersonnage=IMG_Load("img/Po-PD.png");
+    AffichageTiles=IMG_Load("img/Bamboo-Bloc.png");
+    AffichageMurs=IMG_Load("img/Rock-Bloc.png");
+    AffichageChemin=IMG_Load("img/Chemin.png");
+    AffichageBomb=IMG_Load("img/bomb.png");
+    AffichageBombExplosion=IMG_Load("img/explosion_bombe.png");
+    AffichageLoose=IMG_Load("img/gameover.jpg");
+     AffichageWin=IMG_Load("img/youwin.png");
+     AffichagePowerUp=IMG_Load("img/pow.png");
     if (AffichagePowerUp == NULL)
     {
         printf("Erruer Image PowerUp \n");
@@ -1035,7 +1034,7 @@ void InitialisationJoeur(SDL_Renderer *rendu, int map[13][13])
 void InitialisationJoeur2(SDL_Renderer *rendu, int map[13][13])
 {
 
-    SDL_Surface *AffichagePersonnage = IMG_Load("img/Maitre_Singe.bmp");
+    SDL_Surface *AffichagePersonnage = IMG_Load("img/Maitre_Singe.png");
     SDL_Texture *Personnage1 = NULL;
 
     Personnage1 = SDL_CreateTextureFromSurface(rendu, AffichagePersonnage);
