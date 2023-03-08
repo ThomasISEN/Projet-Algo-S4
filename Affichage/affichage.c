@@ -227,13 +227,13 @@ int menu(){
         return EXIT_FAILURE;
     }
     
-    AffichagePersonnage2=IMG_Load("img/Maitre_Singe.bmp");
+    AffichagePersonnage2=IMG_Load("img/Maitre_Singe.png");
     AffichagePersonnage=IMG_Load("img/Po-PD.png");
     AffichageTiles=IMG_Load("img/Bamboo-Bloc.png");
     AffichageMurs=IMG_Load("img/Rock-Bloc.png");
     AffichageChemin=IMG_Load("img/Chemin.png");
     AffichageBomb=IMG_Load("img/bomb.png");
-    AffichageBombExplosion=IMG_Load("img/explosion_bombe.jpg");
+    AffichageBombExplosion=IMG_Load("img/explosion_bombe.png");
     AffichageLoose=IMG_Load("img/gameover.jpg");
      AffichageWin=IMG_Load("img/youwin.png");
      AffichagePowerUp=IMG_Load("img/pow.png");
@@ -1059,7 +1059,7 @@ void InitialisationJoeur(SDL_Renderer* rendu, int map[13][13]){
 
 void InitialisationJoeur2(SDL_Renderer* rendu, int map[13][13]){
   
-    SDL_Surface* AffichagePersonnage=IMG_Load("img/Maitre_Singe.bmp");
+    SDL_Surface* AffichagePersonnage=IMG_Load("img/Maitre_Singe.png");
     SDL_Texture* Personnage1=NULL;
    
     Personnage1=SDL_CreateTextureFromSurface(rendu,AffichagePersonnage);
@@ -1170,7 +1170,7 @@ void DeplacementPersonnage(SDL_Renderer* rendu,int touche,int Carte[13][13]){
 void DeplacementPersonnage2(SDL_Renderer* rendu,int touche,int Carte[13][13]){
    
    
-    SDL_Surface* AffichagePersonnage=IMG_Load("img/Maitre_Singe.bmp");
+    SDL_Surface* AffichagePersonnage=IMG_Load("img/Maitre_Singe.png");
     SDL_Texture* Personnage1=NULL;
     Personnage1=SDL_CreateTextureFromSurface(rendu,AffichagePersonnage);
    
